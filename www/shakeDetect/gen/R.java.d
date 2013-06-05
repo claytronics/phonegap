@@ -1,0 +1,23 @@
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\gen\com\shakeDetect\R.java \
+ : c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\res\drawable\icon.png \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\res\drawable-hdpi\icon.png \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\res\drawable-hdpi\ic_launcher.png \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\res\drawable-ldpi\icon.png \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\res\drawable-ldpi\ic_launcher.png \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\res\drawable-mdpi\icon.png \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\res\drawable-mdpi\ic_launcher.png \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\res\drawable-xhdpi\icon.png \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\res\drawable-xhdpi\ic_launcher.png \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\res\layout\main.xml \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\res\values\strings.xml \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\res\xml\config.xml \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\bin\res\drawable\icon.png \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\bin\res\drawable-hdpi\icon.png \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\bin\res\drawable-hdpi\ic_launcher.png \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\bin\res\drawable-ldpi\icon.png \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\bin\res\drawable-ldpi\ic_launcher.png \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\bin\res\drawable-mdpi\icon.png \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\bin\res\drawable-mdpi\ic_launcher.png \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\bin\res\drawable-xhdpi\icon.png \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\bin\res\drawable-xhdpi\ic_launcher.png \
+c:\CMU\Summer2013\seth_goldstien\proj\shakeDetect\bin\AndroidManifest.xml \
