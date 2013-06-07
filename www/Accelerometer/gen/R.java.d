@@ -1,0 +1,23 @@
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\gen\com\Acceleration\R.java \
+ : c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\res\drawable\icon.png \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\res\drawable-hdpi\icon.png \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\res\drawable-hdpi\ic_launcher.png \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\res\drawable-ldpi\icon.png \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\res\drawable-ldpi\ic_launcher.png \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\res\drawable-mdpi\icon.png \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\res\drawable-mdpi\ic_launcher.png \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\res\drawable-xhdpi\icon.png \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\res\drawable-xhdpi\ic_launcher.png \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\res\layout\main.xml \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\res\values\strings.xml \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\res\xml\config.xml \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\bin\res\drawable\icon.png \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\bin\res\drawable-hdpi\icon.png \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\bin\res\drawable-hdpi\ic_launcher.png \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\bin\res\drawable-ldpi\icon.png \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\bin\res\drawable-ldpi\ic_launcher.png \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\bin\res\drawable-mdpi\icon.png \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\bin\res\drawable-mdpi\ic_launcher.png \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\bin\res\drawable-xhdpi\icon.png \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\bin\res\drawable-xhdpi\ic_launcher.png \
+c:\CMU\Summer2013\seth_goldstien\proj\Accelerometer\bin\AndroidManifest.xml \
