@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0;" />
+    <style type="text/css">
+      a {
+        color:black;
+        display:block;
+        margin:10px 0px;
+      }
+    </style>
+
+    <script type="text/javascript" src="jsDraw2D.js"></script>
+    <script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
+    <script type="text/javascript" charset="utf-8">
+
+      document.addEventListener("deviceready", onDeviceReady, false);
+        
+      var X,Y,A,B,beginX,beginY,beginA,beginB;    
+      var timer;
+        
+      function onDeviceReady() 
+      {
+        document.addEventListener('touchstart', function(event){ 
+         event.preventDefault();
+         var touch = event.touches[0];
+         var touch1 = event.touches[1];
+        
+         X = touch.pageX;
+         Y = touch.pageY;
+         beginX = X;
+         beginY = Y;
+         
+          if(touch1)
+          {
+             A = touch1.pageX;
+             beginA = A;
+             B = touch1.pageY;
+             beginB = B;
+          }
+         
+         var gr = new jsGraphics(document.getElementById("canvas"));
+          
+            if(touch && touch1)
+            var col = new jsColor("green");
+            else
+            var col = new jsColor("red");
+            
+          var pen = new jsPen(col,2);
+         
+          var pt1 = new jsPoint(X,Y);
+          var pt2 = new jsPoint(X,Y);
+         gr.drawLine(pen,pt1,pt2);         
+         
+         if(A && B)
+         {
+         var pt1 = new jsPoint(A,B);
+         var pt2 = new jsPoint(A,B);
+         gr.drawLine(pen,pt1,pt2);
+         }
+        }, false);
+        
+        document.addEventListener('touchend', function(event){
+        history.go(0);
+        }   , false);
+        
+        
+        document.addEventListener('touchmove', function(event){
+         event.preventDefault();
+          var touch = event.touches[0];
+          var touch1 = event.touches[1];
+            //console.log("Touch x:" + touch.pageX + ", y:" + touch.pageY);
+          var gr = new jsGraphics(document.getElementById("canvas"));
+           
+           
+            if(touch && touch1)
+            var col = new jsColor("green");
+            else
+            var col = new jsColor("black");
+
+            //Create jsPen object
+          var pen = new jsPen(col,2);
+          
+          var pt1 = new jsPoint(X,Y);
+          var pt2 = new jsPoint(touch.pageX,touch.pageY);
+          gr.drawLine(pen,pt1,pt2);
+          X= touch.pageX;
+          Y= touch.pageY;
+          
+          if(touch1)
+          {
+            var pt3 = new jsPoint(A,B);
+            var pt4 = new jsPoint(touch1.pageX,touch1.pageY);
+          gr.drawLine(pen,pt3,pt4);
+          A= touch1.pageX;
+          B= touch1.pageY;
+          }
+                    
+          }, false);          
+      }
+
+    </script>
+
+    <title>Touch Example</title>
+  </head>
+  <body>
+    <h1>Touch</h1>
+  </body>
+</html>
