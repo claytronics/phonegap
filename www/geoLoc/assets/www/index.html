@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+
+<html>
+  <head>
+    <title>Device Properties Example</title>
+
+    <script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
+    <script type="text/javascript" charset="utf-8">
+
+    // Wait for Cordova to load
+    var watchID = null;
+    document.addEventListener("deviceready", onDeviceReady, false);
+
+    // Cordova is ready
+   
+    function onDeviceReady() 
+    {    
+        checkConnection();
+        //setInterval(getPosition,2000);
+        var options = { frequency:1000, enableHighAccuracy: true};
+        watchID = navigator.geolocation.watchPosition(onSuccess, onError,options);
+    }
+
+    function getPosition()
+    {
+       var options = { enableHighAccuracy: true};
+       watchID = navigator.geolocation.watchPosition(onSuccess, onError,options);
+    }
+    
+    function checkConnection() 
+    {
+        var networkState = navigator.connection.type;
+
+        var states = {};
+        states[Connection.UNKNOWN]  = 'Unknown connection';
+        states[Connection.ETHERNET] = 'Ethernet connection';
+        states[Connection.WIFI]     = 'WiFi connection';
+        states[Connection.CELL_2G]  = 'Cell 2G connection';
+        states[Connection.CELL_3G]  = 'Cell 3G connection';
+        states[Connection.CELL_4G]  = 'Cell 4G connection';
+        states[Connection.NONE]     = 'No network connection';
+        alert('Connection type: ' + states[networkState]);
+        
+    }
+    
+    function onSuccess(position) 
+    {
+        var element = document.getElementById('geolocation');
+        element.innerHTML = 'Latitude: '           + position.coords.latitude              + '<br />' +
+                            'Longitude: '          + position.coords.longitude             + '<br />' ;
+    }
+
+    // onError Callback receives a PositionError object
+    //
+    function onError(error) {
+        alert('code: '    + error.code    + '\n' +
+                'message: ' + error.message + '\n');
+    }
+
+    </script>
+  </head>
+  <body>
+    <p id="geolocation">Finding geolocation...</p>
+  </body>
+</html>
