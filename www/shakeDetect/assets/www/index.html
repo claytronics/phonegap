@@ -2,10 +2,10 @@
 <html>
   <head>
     <title>Shake Detection</title>
-    <img src="img/logo.png" id="imgLogo" class="logo" height="56" width="56">
     <script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
+	<script type="text/javascript" src="canvasjs.min.js"></script>
     <script type="text/javascript" charset="utf-8">
-
+	
     // The watch id references the current `watchAcceleration`
     var watchID = null;
 
@@ -16,12 +16,21 @@
     // Cordova is ready
     //
     function onDeviceReady() {
-        shake.startWatch(someCallBack);
+		//alert("onDeviceReady");
+		shake.startWatch(someCallBack);
     }
-	 function someCallBack(){
-		alert("Shake Detected!!");
+	 function someCallBack(acceleration){
+		var element=document.getElementById("shakestrength")
+		element.style.width="1px";
+		
+		showStrength(acceleration);		
 	 }
 	 
+	 function showStrength(acceleration){
+		var strength=(((acceleration.x + acceleration.y + acceleration.z)/3)*10) + "px";
+		var element=document.getElementById("shakestrength")
+		element.style.width=strength;
+	 }
 var shake = (function () {
 	var shake = {},
 		watchId = null,
@@ -31,6 +40,11 @@ var shake = (function () {
 	
 	// Start watching the accelerometer for a shake gesture
 	shake.startWatch = function (onShake) {
+		//alert("startWatch");		
+
+		var element=document.getElementById("shakestrength")
+		element.style.width="1px";
+		
 		shakeCallBack = onShake;
 		watchId = navigator.accelerometer.watchAcceleration(assessCurrentAcceleration, handleError, options);
 	};
@@ -45,16 +59,19 @@ var shake = (function () {
 		
 	// Assess the current acceleration parameters to determine a shake
 	function assessCurrentAcceleration(acceleration) {
+	//alert("assessCurrentAcceleration");		
+		
 		var accelerationChange = {};
 		if (previousAcceleration.x !== null) {
 			accelerationChange.x = Math.abs(previousAcceleration.x, acceleration.x);
 			accelerationChange.y = Math.abs(previousAcceleration.y, acceleration.y);
 			accelerationChange.z = Math.abs(previousAcceleration.z, acceleration.z);
 		}
+		
 		if (accelerationChange.x + accelerationChange.y + accelerationChange.z > 30) {
 			// Shake detected
 			if (typeof (shakeCallBack) === "function") {
-				shakeCallBack();
+				shakeCallBack(accelerationChange);
 			}
 			shake.stopWatch();
 			setTimeout(shake.startWatch, 1000, shakeCallBack);
@@ -75,14 +92,24 @@ var shake = (function () {
 	// Handle errors here
 	function handleError() {
 	}
-	
+			
 	return shake;
 })();
-
     </script>
+  <style>
+	div#shakestrength
+	{
+	width:1px;
+	height:50px;
+	background:red;
+	transition:width 1s;
+	-webkit-transition:width 1s; /* Safari */
+	}
+	#shakestrength{-webkit-transition-timing-function: ease-in;}
+  </style>	
   </head>
   
   <body>
-    <div id="accelerometer">Waiting for accelerometer...</div>
+    <div id="shakestrength"></div>
   </body>
 </html>
