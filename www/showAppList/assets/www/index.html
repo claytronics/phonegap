@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>App List</title>
+    <script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
+	<script type="text/javascript" src="AppLister.js"></script>
+    <script type="text/javascript" charset="utf-8">
+	
+    // The watch id references the current `watchAcceleration`
+    var watchID = null;
+
+    // Wait for Cordova to load
+    //
+    document.addEventListener("deviceready", onDeviceReady, false);
+
+	// Cordova is ready
+    //
+    function onDeviceReady() {
+		//alert("onDeviceReady");
+		appList.Running(successCB, errCB);
+    }
+	 function successCB(str){
+	 	//alert("successCB " + str);
+		var element = document.getElementById('App List');
+        element.innerHTML = 'List of Running Apps:' + str;		
+	 }
+	 
+	 function errCB(){
+		alert("errCB");
+	 }    	
+    
+    </script>
+  </head>
+  
+  <body>
+  <div id="App List"> Waiting to List Running Apps </div>        
+  </body>
+</html>
