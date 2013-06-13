@@ -17,7 +17,8 @@
     //
     function onDeviceReady() {
 		//alert("onDeviceReady");
-		appList.Running(successCB, errCB);
+		var options = { frequency: 1000 };		
+		appList.Running(successCB, errCB, options);
     }
 	 function successCB(str){
 	 	//alert("successCB " + str);
