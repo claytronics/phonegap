@@ -23,7 +23,7 @@
 	 function successCB(str){
 	 	//alert("successCB");
 		var element = document.getElementById('Top List');
-        element.innerHTML = str;		
+        element.innerText = str;		
 	 }
 	 
 	 function errCB(str){
@@ -34,6 +34,6 @@
   </head>
   
   <body>
-  <div id="Top List"> Waiting to Run a Shell Cmd </div>        
+  <pre id="Top List"> Waiting to Run a Shell Cmd </pre>        
   </body>
 </html>

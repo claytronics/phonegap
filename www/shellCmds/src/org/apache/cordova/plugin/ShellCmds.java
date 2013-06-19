@@ -35,7 +35,7 @@ public class ShellCmds extends CordovaPlugin {
 				String sTopOutput="", sCurrLine;
 								
 				while ((sCurrLine = in.readLine()) != null) {
-					sTopOutput += sCurrLine + "<br>";
+					sTopOutput += sCurrLine + "\n";
 					Log.w(TAG, sCurrLine);
 				}
 				in.close();
