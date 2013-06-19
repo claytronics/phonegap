@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>App List</title>
+    <script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
+	<script type="text/javascript" src="ShellCmds.js"></script>
+    <script type="text/javascript" charset="utf-8">
+	
+    // The watch id references the current `watchAcceleration`
+    var watchID = null;
+
+    // Wait for Cordova to load
+    //
+    document.addEventListener("deviceready", onDeviceReady, false);
+
+	// Cordova is ready
+    //
+    function onDeviceReady() {
+		//alert("onDeviceReady");
+		var options = { frequency: 1000 };		
+		ShellCmds.Top(successCB, errCB, options);
+    }
+	 function successCB(str){
+	 	//alert("successCB");
+		var element = document.getElementById('Top List');
+        element.innerHTML = str;		
+	 }
+	 
+	 function errCB(){
+		alert("errCB");
+	 }    	
+    
+    </script>
+  </head>
+  
+  <body>
+  <div id="Top List"> Waiting to Run a Shell Cmd </div>        
+  </body>
+</html>
