@@ -28,18 +28,18 @@ public class ShellCmds extends CordovaPlugin {
 			
         	try
 			{				
-				CommandCapture command = new CommandCapture(0, "top -m 20 -n 1 > /data/local/tmp/top.txt");
+				CommandCapture command = new CommandCapture(0, "top -m 20 -n 1");
 				RootTools.getShell(false).add(command).waitForFinish();
 				
-				BufferedReader in = new BufferedReader(new FileReader("/data/local/tmp/top.txt"));
-				String sTopOutput="", sCurrLine;
+				//BufferedReader in = new BufferedReader(new FileReader("/data/local/tmp/top.txt"));
+				//String sTopOutput="", sCurrLine;
 								
-				while ((sCurrLine = in.readLine()) != null) {
+				/*while ((sCurrLine = in.readLine()) != null) {
 					sTopOutput += sCurrLine + "\n";
 					Log.w(TAG, sCurrLine);
 				}
-				in.close();
-				callbackContext.success(sTopOutput);
+				in.close();*/
+				callbackContext.success(command.toString());
 				return true;
 			}
 			catch (IOException e) 
