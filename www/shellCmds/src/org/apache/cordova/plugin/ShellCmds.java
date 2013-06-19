@@ -28,7 +28,7 @@ public class ShellCmds extends CordovaPlugin {
 			
         	try
 			{				
-				CommandCapture command = new CommandCapture(0, "/system/bin/top -n 1 > /data/local/tmp/top.txt");
+				CommandCapture command = new CommandCapture(0, "top -m 20 -n 1 > /data/local/tmp/top.txt");
 				RootTools.getShell(false).add(command).waitForFinish();
 				
 				BufferedReader in = new BufferedReader(new FileReader("/data/local/tmp/top.txt"));
