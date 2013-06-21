@@ -8,8 +8,6 @@ import org.json.JSONException;
 import android.util.Log;
 
 import java.util.concurrent.TimeoutException;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import com.stericson.RootTools.*;
 import com.stericson.RootTools.exceptions.RootDeniedException;
@@ -66,18 +64,18 @@ public class ShellCmds extends CordovaPlugin {
 			
         	try
 			{				
-				CommandCapture command = new CommandCapture(0, "/system/bin/ps > /data/local/tmp/ps.txt");
+				CommandCapture command = new CommandCapture(0, "ps");
 				RootTools.getShell(false).add(command).waitForFinish();
 				
-				BufferedReader in = new BufferedReader(new FileReader("/data/local/tmp/ps.txt"));
-				String sTopOutput="", sCurrLine;
+				//BufferedReader in = new BufferedReader(new FileReader("/data/local/tmp/ps.txt"));
+				//String sTopOutput="", sCurrLine;
 								
-				while ((sCurrLine = in.readLine()) != null) {
+				/*while ((sCurrLine = in.readLine()) != null) {
 					sTopOutput += sCurrLine;
 					Log.w(TAG, sCurrLine);
 				}
-				in.close();
-				callbackContext.success(sTopOutput);
+				in.close();*/
+				callbackContext.success(command.toString());
 				return true;
 			}
 			catch (IOException e) 

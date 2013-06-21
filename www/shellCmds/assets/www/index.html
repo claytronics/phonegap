@@ -15,14 +15,16 @@
 
 	// Cordova is ready
     //
+    var options = { frequency: 1000, pid:-1 };		
+	var id;
+		
     function onDeviceReady() {
 		//alert("onDeviceReady");
-		var options = { frequency: 1000 };		
-		ShellCmds.Top(successCB, errCB, options);
+		//ShellCmds.PS(successCB, errCB, options);
     }
 	 function successCB(str){
 	 	//alert("successCB");
-		var element = document.getElementById('Top List');
+		var element = document.getElementById('Screen');
         element.innerText = str;		
 	 }
 	 
@@ -30,10 +32,27 @@
 		alert("errCB" +str);
 	 }    	
     
+     function Top(){
+     	ShellCmds.Top(successCB, errCB, options);
+     }
+     function PS(){
+     	ShellCmds.PS(successCB, errCB, options);
+     }
+     function clearScreen(){
+	     //alert("Clear");
+	     //id=clearInterval(id);
+	     var element = document.getElementById('Screen'); 
+	     element.innerText = "Waiting to Run a Shell Cmd";       
+     }
+     
     </script>
   </head>
   
   <body>
-  <pre id="Top List"> Waiting to Run a Shell Cmd </pre>        
+  <pre id="Screen"> Waiting to Run a Shell Cmd </pre> 
+  Choose the shell command:
+  <button onclick="Top();">Top</button>       
+  <button onclick="PS();">PS</button>
+  <button onclick="clearScreen()">Clear</button>       
   </body>
 </html>
