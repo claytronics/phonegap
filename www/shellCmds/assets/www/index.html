@@ -35,16 +35,16 @@
 	    
 	     function Top(){
 	     	id = self.setInterval(function(){ShellCmds.Top(successCB, errCB, options)}, options.frequency);
-	     	alert("Top" + id);
+	     	//alert("Top" + id);
 	     }
 	     function PS(){
 	     	id = self.setInterval(function(){ShellCmds.PS(successCB, errCB, options)}, options.frequency);
-	     	alert("PS" + id);
+	     	//alert("PS" + id);
 	     }
 	     function clearScreen(){
-		     alert("Clear" + id);
+		     //alert("Clear" + id);
 		     id=window.clearInterval(id);
-		     alert("Clear done" + id);
+		     //alert("Clear done" + id);
 		     var element = document.getElementById('Screen'); 
 		     element.innerText = "Waiting to Run a Shell Cmd";       
 	     }
