@@ -41,9 +41,15 @@
 	     	id = self.setInterval(function(){ShellCmds.PS(successCB, errCB, options)}, options.frequency);
 	     	//alert("PS" + id);
 	     }
+	     
+	     function Logcat(){
+	     	ShellCmds.logcat(successCB, errCB, options);	     	
+	     }
+	     
 	     function clearScreen(){
 		     //alert("Clear" + id);
-		     id=window.clearInterval(id);
+		     if(id)
+		     	id=window.clearInterval(id);
 		     //alert("Clear done" + id);
 		     var element = document.getElementById('Screen'); 
 		     element.innerText = "Waiting to Run a Shell Cmd";       
@@ -54,6 +60,7 @@
     Choose the shell command:
     <button onclick="Top();">Top</button>       
     <button onclick="PS();">PS</button>
+    <button onclick="Logcat();">Logcat</button>
     <button onclick="clearScreen()">Clear</button>       
     <pre id="Screen"> Waiting to Run a Shell Cmd </pre> 
   </body>

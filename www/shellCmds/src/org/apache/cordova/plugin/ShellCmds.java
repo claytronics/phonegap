@@ -9,6 +9,7 @@ import android.util.Log;
 
 import java.util.concurrent.TimeoutException;
 import java.io.IOException;
+
 import com.stericson.RootTools.*;
 import com.stericson.RootTools.exceptions.RootDeniedException;
 import com.stericson.RootTools.execution.CommandCapture;
@@ -29,14 +30,6 @@ public class ShellCmds extends CordovaPlugin {
 				CommandCapture command = new CommandCapture(0, "top -m 20 -n 1");
 				RootTools.getShell(false).add(command).waitForFinish();
 				
-				//BufferedReader in = new BufferedReader(new FileReader("/data/local/tmp/top.txt"));
-				//String sTopOutput="", sCurrLine;
-								
-				/*while ((sCurrLine = in.readLine()) != null) {
-					sTopOutput += sCurrLine + "\n";
-					Log.w(TAG, sCurrLine);
-				}
-				in.close();*/
 				callbackContext.success(command.toString());
 				return true;
 			}
@@ -67,14 +60,6 @@ public class ShellCmds extends CordovaPlugin {
 				CommandCapture command = new CommandCapture(0, "ps");
 				RootTools.getShell(false).add(command).waitForFinish();
 				
-				//BufferedReader in = new BufferedReader(new FileReader("/data/local/tmp/ps.txt"));
-				//String sTopOutput="", sCurrLine;
-								
-				/*while ((sCurrLine = in.readLine()) != null) {
-					sTopOutput += sCurrLine;
-					Log.w(TAG, sCurrLine);
-				}
-				in.close();*/
 				callbackContext.success(command.toString());
 				return true;
 			}
@@ -128,6 +113,43 @@ public class ShellCmds extends CordovaPlugin {
 			}
         
         }
-		return false;
+        else if (action.equals("logcat")) {
+        	Log.w(TAG, "logcat Cmd");
+			
+        	try
+			{				
+        		//String filename = String.valueOf(System.currentTimeMillis()) + ".txt";
+        		String filename = "/data/local/tmp/logcat.txt";
+        		        		
+				CommandCapture command = new CommandCapture(0, "logcat -d -v long ");
+				RootTools.getShell(false).add(command).waitForFinish();
+								
+				callbackContext.success(command.toString() + "\n\n*** logcat dumped to file " + filename + "***\n\n");
+				
+				command = new CommandCapture(0, "cat " + command.toString() + " > " + filename);
+				RootTools.getShell(false).add(command).waitForFinish();
+				
+				return true;
+			}
+			catch (IOException e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				callbackContext.error("Error in reading Running App List");
+				return false;
+			}
+        	catch (InterruptedException e) 
+        	{
+        		Log.w(TAG, "InterruptedException");
+                throw new RuntimeException(e);
+            } catch (TimeoutException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (RootDeniedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        } 
+        return false;
 	}	
 }
