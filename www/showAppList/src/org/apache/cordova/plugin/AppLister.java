@@ -19,6 +19,7 @@ import android.content.IntentFilter;
 import android.app.ActivityManager;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
 import java.util.HashMap;
@@ -39,18 +40,20 @@ public class AppLister extends CordovaPlugin {
 	private static final String TAG = "AppListerJava";
 	private static int value =1;
 	BroadcastReceiver receiver;
-	private static HashMap<String,Integer> processListNew = new HashMap<String,Integer>();
-	private static HashMap<String,Integer> processListOld = new HashMap<String,Integer>();
-	
+	private static HashMap<String,Integer> processListNew = null;
+	private static HashMap<String,Integer> processListOld = null;
+	Boolean alreadyPresent = false;
+	Boolean changed = false;
+	String ground = "";
+
 	@Override
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 		Log.w(TAG, "Start");
-		
-		Boolean alreadyPresent = false;
-		Boolean changed = false;
-		String ground = "";
-		
-		if (action.equals("Running")) {
+
+		processListNew = new HashMap<String,Integer>();
+
+		if (action.equals("Running"))
+		{
 			Log.w(TAG, "1");
 			ActivityManager am = (ActivityManager)cordova.getActivity().getSystemService(Context.ACTIVITY_SERVICE);
 			Log.w(TAG, "2");
@@ -60,69 +63,80 @@ public class AppLister extends CordovaPlugin {
 			Log.w(TAG, "4");
 			PackageManager pm = this.cordova.getActivity().getPackageManager();
 			String AppList = "<br>";
-			while(i.hasNext()) 
+
+			while(i.hasNext())
 			{
-				Log.w(TAG, "5");
 				ActivityManager.RunningAppProcessInfo info = (ActivityManager.RunningAppProcessInfo)(i.next());
-				try {
-					Log.w(TAG, "6");		            
-                   
+				try
+				{
 					CharSequence c = pm.getApplicationLabel(pm.getApplicationInfo(info.processName, PackageManager.GET_META_DATA));
 					Log.w("LABEL", c.toString());
 					boolean AppCategory = (pm.getApplicationInfo(info.processName, PackageManager.GET_META_DATA).flags & ApplicationInfo.FLAG_SYSTEM)!=0;
 					String AppType = AppCategory?"SYSTEM":"USER";
-					AppList += (AppCategory?"<font color=\"red\">":"<font color=\"blue\">")+ c.toString() + " :" + AppType + "</font>;<br>" 
-							+info.importance + (++value);
-					
+					AppList += (AppCategory?"<font color=\"red\">":"<font color=\"blue\">")+ c.toString() + " :" + AppType + "</font>;<br>"
+							;
+
 					processListNew.put(info.processName, info.importance);
-					
-					if(processListOld!=null)
+			 		System.out.println("New infoProcesName"+info.processName);
+			        if(processListOld!=null)
+			        {
+					   if(processListOld.containsKey(info.processName)== false)
+					   {
+						   AppList += "NEWAPP";
+					   }
+					   else
+					   {
+						   if(processListOld.get(info.processName)!= info.importance)
+						   {
+							   if(info.importance == 100)
+							   {
+								   ground  = "Taken BG";
+							   }
+							   else if(info.importance == 400)
+							   {
+								   ground = "Brought FG";
+							   }
+							   AppList += ground;
+						   }
+					   }
+			        }
+				}
+				catch(Exception e)
+				{
+					System.out.println("EXCEPTOIN\n");
+					e.printStackTrace();System.out.println("EXCEPTOIN2\n");
+					//Name Not FOund Exception
+				}
+			}
+
+			//processListOld = new HashMap<String,Integer>();
+
+			if(processListOld!=null)
+			{
+				Iterator<Entry<String,Integer>> it= processListOld.entrySet().iterator();
+				while(it.hasNext())
+				{
+					Map.Entry<String,Integer> processEntry = it.next();
+					if(processListNew.containsKey(processEntry.getKey()) == false)
 					{
-						Iterator<Entry<String,Integer>> it= processListOld.entrySet().iterator();
-						
-						while(it.hasNext())
+						try
 						{
-							Map.Entry<String,Integer> processEntry = it.next();
-							System.out.println("New infoProcesName"+info.processName);
-							System.out.println("Oldkey"+processEntry.getKey());
-							if(info.processName.equals(processEntry.getKey()))
-							{
-								alreadyPresent = true;
-								System.out.println("already present is true");
-								
-								if(processEntry.getValue() != info.importance)
-								{
-								   changed = true;
-								   System.out.println("ground");
-								   if(info.importance == 100){
-									   ground = "Taken BG";
-								   }
-								   else if(info.importance == 400){
-									   ground = "Brought FG";
-								   }		   
-								}	
-							}	
+							AppList+= pm.getApplicationLabel(pm.getApplicationInfo(processEntry.getKey(), PackageManager.GET_META_DATA)) + "closed";
 						}
-						
-						AppList += ((alreadyPresent)?"": "NEWAPP") + ground;
-					}			
-					
-				 }catch(Exception e) {
-					 System.out.println("EXCEPTOIN\n");
-					 e.printStackTrace();System.out.println("EXCEPTOIN2\n");
-					 
-						Log.w(TAG, "7");		            
-						//Name Not FOund Exception				
+						catch (NameNotFoundException e)
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				}
-			    
-			    processListOld = processListNew;
-			    
-				callbackContext.success(AppList);
-				return true;
+			}
 
-			} 
-			callbackContext.error("Error in reading Running App List");
-			return false;
+			processListOld = processListNew;
+			callbackContext.success(AppList);
+			return true;
 		}
-	}	
+		callbackContext.error("Error in reading Running App List");
+		return false;
+	}
+}
