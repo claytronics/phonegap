@@ -1,58 +1,67 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>App List</title>
-    <script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
-	<script type="text/javascript" src="ShellCmds.js"></script>
-    <script type="text/javascript" charset="utf-8">
-	
-    // The watch id references the current `watchAcceleration`
-    var watchID = null;
-
-    // Wait for Cordova to load
-    //
-    document.addEventListener("deviceready", onDeviceReady, false);
-
-	// Cordova is ready
-    //
-    var options = { frequency: 1000, pid:-1 };		
-	var id;
-		
-    function onDeviceReady() {
-		//alert("onDeviceReady");
-		//ShellCmds.PS(successCB, errCB, options);
-    }
-	 function successCB(str){
-	 	//alert("successCB");
-		var element = document.getElementById('Screen');
-        element.innerText = str;		
-	 }
-	 
-	 function errCB(str){
-		alert("errCB" +str);
-	 }    	
-    
-     function Top(){
-     	ShellCmds.Top(successCB, errCB, options);
-     }
-     function PS(){
-     	ShellCmds.PS(successCB, errCB, options);
-     }
-     function clearScreen(){
-	     //alert("Clear");
-	     //id=clearInterval(id);
-	     var element = document.getElementById('Screen'); 
-	     element.innerText = "Waiting to Run a Shell Cmd";       
-     }
-     
-    </script>
-  </head>
-  
   <body>
-  <pre id="Screen"> Waiting to Run a Shell Cmd </pre> 
-  Choose the shell command:
-  <button onclick="Top();">Top</button>       
-  <button onclick="PS();">PS</button>
-  <button onclick="clearScreen()">Clear</button>       
+    <head>
+	    <title>App List</title>
+	    <script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
+		<script type="text/javascript" src="ShellCmds.js"></script>
+	    <script type="text/javascript" charset="utf-8">
+		
+	    // The watch id references the current `watchAcceleration`
+	    var watchID = null;
+	
+	    // Wait for Cordova to load
+	    //
+	    document.addEventListener("deviceready", onDeviceReady, false);
+	
+		// Cordova is ready
+	    //
+	    var options = { frequency: 10000, pid:-1 };		
+		var id;
+			
+	    function onDeviceReady() {
+			//alert("onDeviceReady");
+			//ShellCmds.PS(successCB, errCB, options);
+	    }
+		 function successCB(str){
+		 	//alert("successCB");
+			var element = document.getElementById('Screen');
+	        element.innerText = str;		
+		 }
+		 
+		 function errCB(str){
+			alert("errCB " +str);
+		 }    	
+	    
+	     function Top(){
+	     	id = self.setInterval(function(){ShellCmds.Top(successCB, errCB, options)}, options.frequency);
+	     	//alert("Top" + id);
+	     }
+	     function PS(){
+	     	id = self.setInterval(function(){ShellCmds.PS(successCB, errCB, options)}, options.frequency);
+	     	//alert("PS" + id);
+	     }
+	     
+	     function Logcat(){
+	     	ShellCmds.logcat(successCB, errCB, options);	     	
+	     }
+	     
+	     function clearScreen(){
+		     //alert("Clear" + id);
+		     if(id)
+		     	id=window.clearInterval(id);
+		     //alert("Clear done" + id);
+		     var element = document.getElementById('Screen'); 
+		     element.innerText = "Waiting to Run a Shell Cmd";       
+	     }
+	     
+      </script>
+    </head>  
+    Choose the shell command:
+    <button onclick="Top();">Top</button>       
+    <button onclick="PS();">PS</button>
+    <button onclick="Logcat();">Logcat</button>
+    <button onclick="clearScreen()">Clear</button>       
+    <pre id="Screen"> Waiting to Run a Shell Cmd </pre> 
   </body>
 </html>
