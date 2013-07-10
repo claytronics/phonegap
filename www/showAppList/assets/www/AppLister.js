@@ -4,9 +4,9 @@ var appList = {
 		// Default interval (10 sec)
         var frequency = (options && options.frequency && typeof options.frequency == 'number') ? options.frequency : 10000;
 	
-		timer:window.setInterval(function() {
-                    cordova.exec(successCallback, errorCallback, "AppLister", "Running", []);                
-            }, frequency);		
+		//timer:window.setInterval(function() {
+                    cordova.exec(successCallback, errorCallback, "ShowAppList", "Running", []);                
+            //}, frequency);		
     },
 
 };

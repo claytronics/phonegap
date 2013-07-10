@@ -1,39 +1,142 @@
 <!DOCTYPE html>
 <html>
   <head>
+  
     <title>App List</title>
+    
+    <style type="text/css">
+        html, body, #geoLocation {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+    </style>
+    
     <script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
 	<script type="text/javascript" src="AppLister.js"></script>
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script type="text/javascript" charset="utf-8">
 	
-    // The watch id references the current `watchAcceleration`
     var watchID = null;
-
-    // Wait for Cordova to load
-    //
-    document.addEventListener("deviceready", onDeviceReady, false);
-
-	// Cordova is ready
-    //
-    function onDeviceReady() {
-		//alert("onDeviceReady");
-		var options = { frequency: 1000 };		
-		appList.Running(successCB, errCB, options);
+    var array = new Array();
+    var i=0;
+    var db = openDatabase('mydb', '1.0', 'Test DB', 2 * 1024 * 1024);
+    var NoRows =0;
+    var listOfApps;
+    
+    //document.addEventListener("deviceready", onDeviceReady, false);
+    google.maps.event.addDomListener(window, 'load', setup);
+    
+    function setup() 
+    {
+       // wait for PhoneGap to load
+       //alert("SETUP");
+       
+       document.addEventListener("deviceready", onDeviceReady, false);
+        
+       function onDeviceReady() 
+       {
+          alert("ONDEVICE READY");
+          var options = {maximumAge: 3000,timeout:5000, enableHighAccuracy: true};
+          
+          //timer:window.setInterval(function() {
+             navigator.geolocation.watchPosition(onSuccess, onError,options);
+             //}, 10000);
+       }
     }
-	 function successCB(str){
+
+    function onSuccess(position) 
+    {
+      alert("SUCCESS");
+                   
+      var myLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+      var time = getTimeStamp();
+      var options ={};
+      appList.Running(successCB, errCB, options);
+       
+      db.transaction(function (tx) {
+         tx.executeSql('CREATE TABLE IF NOT EXISTS APPLIST5 (id unique, time, lat, long, string)');
+       });
+       
+      db.transaction(function (tx) {
+        tx.executeSql('SELECT * FROM APPLIST5', [], function (tx, results) {
+         NoRows = results.rows.length;
+         },null);
+        }); 
+         
+      //alert("NoOfRows"+NoRows);
+      
+      db.transaction(function (tx) {
+         tx.executeSql('INSERT INTO APPLIST5 (id, time, lat, long, string) VALUES (?,?,?,?,?)',[(NoRows+1), time, position.coords.latitude,position.coords.longitude,listOfApps]);
+       });
+      
+      //array.push(myLocation);
+      
+      map  = new google.maps.Map(document.getElementById('geoLocation'), {
+	                             mapTypeId: google.maps.MapTypeId.ROADMAP,
+ 	                             center: myLocation,
+	                             zoom: 15
+                                 });
+    
+   db.transaction(function (tx) {
+        tx.executeSql('SELECT * FROM APPLIST5', [], function (tx, results){
+            for(var i=1;i<results.rows.length;i++)
+            {  
+                //alert("RESULTS LAT"+results.rows.item(i).lat);
+                //alert("RESULTS LONG"+results.rows.item(i).long);
+                //alert("RESULTS LIST"+results.rows.item(i).string);
+                
+                marker = new google.maps.Marker({
+                            position: new google.maps.LatLng(results.rows.item(i).lat,results.rows.item(i).long),
+                            map: map,
+                            animation: google.maps.Animation.DROP
+                            });
+                 
+                 attachSecretMessage(marker, i,results.rows.item(i).time,results.rows.item(i).string);
+            }
+       },null);
+     });  
+  }   
+   
+  function attachSecretMessage(marker, number, time,string) 
+  {
+    
+    var infowindow = new google.maps.InfoWindow(
+      { content: time +"\n"+ string,
+        size: new google.maps.Size(200,200)
+      });
+    google.maps.event.addListener(marker, 'click', function() {
+    infowindow.open(map,marker);
+      });
+  }
+   
+   function onError(position)
+   {
+     alert("ERROR");
+   }
+   
+   function successCB(str){
 	 	//alert("successCB " + str);
-		var element = document.getElementById('App List');
-        element.innerHTML = 'List of Running Apps:' + str;		
-	 }
+		listOfApps = 'List of Running Apps:' + str;		
+	 }  
 	 
 	 function errCB(){
 		alert("errCB");
-	 }    	
+	 }
+	   
+   function getTimeStamp() 
+   {
+       var now = new Date();
+       return ((now.getMonth() + 1) + '/' + (now.getDate()) + '/' + now.getFullYear() + " " + now.getHours() + ':'
+                     + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())) + ':' + ((now.getSeconds() < 10) ? ("0" + now
+                     .getSeconds()) : (now.getSeconds())));
+    }
     
     </script>
   </head>
   
   <body>
-  <div id="App List"> Waiting to List Running Apps </div>        
+  <div id="geoLocation"> Waiting to List Running Apps </div>        
   </body>
 </html>

@@ -2,11 +2,6 @@ package org.apache.cordova.plugin;
 
 
 import org.apache.cordova.api.CallbackContext;
-import com.stericson.RootTools.*;
-import com.stericson.RootTools.exceptions.RootDeniedException;
-import com.stericson.RootTools.execution.CommandCapture;
-import com.stericson.RootTools.execution.Shell;
-
 import org.apache.cordova.api.CordovaPlugin;
 import org.apache.cordova.api.PluginResult;
 import org.json.JSONArray;
