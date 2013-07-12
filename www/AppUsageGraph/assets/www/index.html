@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="jpgraph.js" type="text/javascript" charset="utf-8"></script>
+</head>
+    <div id="graph"></div>
+	<title>Shake Detection</title>
+    <script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
+	<script type="text/javascript" src="canvasjs.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+    
+    // The watch id references the current `watchAcceleration`
+    var watchID = null;
+
+    // Wait for Cordova to load
+    //
+    document.addEventListener("deviceready", onDeviceReady, false);
+
+    // Cordova is ready
+    //
+    var mainID=0;
+    var index = 0;
+    var SampledTime = new String();
+    var dailyAcclArr = new Array();
+    
+    function onDeviceReady() {
+		//alert("onDeviceReady");
+		//showGraph();   
+		mainID = setInterval(getCurrAccln, 60000);
+    }
+    
+    function getCurrAccln()
+    {
+    	  //alert('getCurrAccln');
+    	  if(index < 24*60/5) // 1 value for every minute of the day
+    	  {
+    	  	 shake.startWatch();
+    	  	 if(index > 2)
+    	  	 	showGraph();    	  	 
+    	  } 
+    	  else
+    	  {
+    	  	index = 0;
+    	  	
+    	  }	 	
+    }
+    
+    var shake = (function () {
+	var shake = {},
+		watchId = null,
+		count = 0;
+		AccArr = new Array();		
+		AvgAccl=0;
+		options = { frequency: 300 },
+		previousAcceleration = { x: null, y: null, z: null },
+		shakeCallBack = null;
+	
+	// Start watching the accelerometer for a shake gesture
+	shake.startWatch = function (onShake) {
+		//alert("startWatch");		
+		watchId = navigator.accelerometer.watchAcceleration(assessCurrentAcceleration, handleError, options);
+	};
+	
+	// Stop watching the accelerometer for a shake gesture
+	shake.stopWatch = function () {
+		if (watchId !== null) {
+			navigator.accelerometer.clearWatch(watchId);
+			watchId = null;
+		}
+	};
+		
+	// Assess the current acceleration parameters to determine a shake
+	function assessCurrentAcceleration(acceleration) {
+	//alert("assessCurrentAcceleration");		
+		
+		var accelerationChange = {x:0, y:0, z:0};
+		if (previousAcceleration.x !== null) {
+			accelerationChange.x = Math.abs(previousAcceleration.x- acceleration.x);
+			accelerationChange.y = Math.abs(previousAcceleration.y- acceleration.y);
+			accelerationChange.z = Math.abs(previousAcceleration.z- acceleration.z);
+				
+			shake.stopWatch();
+			if(count < 10)
+			{
+				//alert(count);
+				AvgAccl = AvgAccl + accelerationChange.x + accelerationChange.y + accelerationChange.z;
+				count++;
+				setTimeout(shake.startWatch, 1000, shakeCallBack);			
+			}
+			else
+			{
+				count = 0;
+				var d = new Date();
+				//alert(d.getHours() + ':' + d.getMinutes());
+				//alert(AvgAccl);
+				AvgAccl = AvgAccl/10;
+				SampledTime = SampledTime.concat(d.getHours() + ':' + d.getMinutes() + '|');
+				dailyAcclArr[index] =  AvgAccl.toString();
+				//alert(dailyAcclArr[index]);
+				AvgAccl = 0;
+				index++;								
+			}	
+			previousAcceleration = { 
+				x: null, 
+				y: null, 
+				z: null
+			}
+		}	
+		else {
+			previousAcceleration = {
+				x: acceleration.x,
+				y: acceleration.y,
+				z: acceleration.z
+			}
+		}
+	}
+ 
+	// Handle errors here
+	function handleError() {
+	}			
+	return shake;
+	})();
+	
+	function showGraph(){
+
+        /**
+         * set graph data
+         */
+       var data = ({series1data: dailyAcclArr});
+       var xLbl = SampledTime;
+       
+        /* clear previous plot */
+		document.getElementById("graph").innerHTML = '';
+       
+       if(dailyAcclArr.length>50)
+       {
+       		var xSplit = xLbl.split("|");
+       		xLbl = "";
+       		//alert(xSplit.length);
+       		for(var i=0;i<xSplit.length;i++)
+       		{
+       			if((i%(Math.floor(xSplit.length/25))) == 0)
+       			{
+       				//alert('good i='+ i + xSplit[i].toString() );
+       				xLbl = xLbl.concat(xSplit[i].toString() + '|');
+       			}
+       			else
+       			{	
+       				//alert('bad i='+ i + xSplit[i].toString());
+       				xLbl = xLbl.concat(' |');
+       			}
+       		}
+       		document.getElementById('demo').innerHTML=xLbl;
+       }
+        /**
+         * draw the graph
+         */
+        var graph = new JpGraph(
+                'line',
+                'graph',
+                data,
+                {
+                  series1               : "color:#ea7532; scale:left",
+                  xLabels               : xLbl,
+                  gridColSpacing        : 800/dailyAcclArr.length,
+                  //gridRowSpacing        : 50,
+                 });
+    }    
+	</script>
+	<div id="graph"></div>	
+	<p id="demo"></p>
+</html>
