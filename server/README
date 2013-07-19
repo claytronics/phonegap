@@ -1,0 +1,10 @@
+To run you must do the following:
+
+npm install optimist
+npm install mongodb
+npm install cookies
+
+To run you must first run
+
+node makedb.js schema.js
+

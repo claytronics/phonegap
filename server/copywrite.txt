@@ -1,0 +1,4 @@
+// Copyright (c) 2012-13, Seth Copen Goldstein
+// Not to be used without prior permission.
+// For permission email: seth.c.goldstein@gmail.com
+

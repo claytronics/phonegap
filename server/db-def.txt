@@ -1,0 +1,29 @@
+Event:
+time, lat, long, accelx, accely, accelz, id, eventtype
+date, float, float, float, float, float, ID, int
+
+eventtype: APP, CALL, MSG, RINGTONE, INFO
+
+apps
+
+id, name, fg, importance, start, end, terminated
+string, bool, int, date, date, bool
+
+call
+id, phone number, start, end, ignored
+
+msg
+id, phone number, start, whenread
+
+ringtone
+id, status (on, off, vibrate)
+
+URL/a/login/user-email/password
+URL/a/record/type/time/lat/long/x/y/z/ [string/bool/imp/start/end/term]
+				       [number/start/end/ignored]
+				       [number/start/when]
+				       [status]
+
+URL/a/getevents/from/to  -> return a list of ids
+URL/a/getsome/from/to/type -> return a list of ids
+URL/a/find/id -> return info for a particular id
