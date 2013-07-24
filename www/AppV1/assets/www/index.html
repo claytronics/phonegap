@@ -12,7 +12,7 @@
 	<script type="text/javascript" src="GeoLocationLogger.js"></script>
 	<script type="text/javascript" src="HttpReq.js"></script>
 	<script type="text/javascript" src="AccelerationLogger.js"></script>
-	<script type="text/javascript" src="AppUsageLogger.js"></script>
+	<script type="text/javascript" src="AppDataLogger.js"></script>
     <script type="text/javascript" src="CallLogger.js"></script>
     <script type="text/javascript" src="canvasjs.min.js"></script>
     <script type="text/javascript" charset="utf-8">
@@ -35,7 +35,7 @@
 	var readyCheckID = null;
 	
 	var frequency = 60000;
-	var rootURI = "http://128.237.201.144:80/a/record/";
+	var rootURI = "http://192.168.1.3:80/a/record/";
 	
 	var currLat = null;
 	var currLon = null;
@@ -44,6 +44,7 @@
 	var az = null;
 	var aTime = null;
 	var lTime = null;
+	var AppData = null;
 	
     function onDeviceReady() {
 		// some init code here
@@ -67,7 +68,7 @@
 		alert('Starting to Track Usage Data');
 		LocnID = setInterval(GeolocationLogger, frequency);
 		AcclID = setInterval(AccelerationLogger, frequency);
-		AppListID = setInterval(AppsDataLogger, frequency);
+		AppListID = setInterval(AppDataLogger, frequency);
 		readyCheckID = setInterval(checkDataReady, frequency/10);
 		// DBpushID = setInterval(dataPushDB, frequency*60); // for now pushing every log to remote server's DB
 	}
@@ -93,6 +94,7 @@
 		az = null;
 		aTime = null;
 		lTime = null;	
+		AppData = null;
 		
 		/*if(DBpushID != null)
 			clearInterval(DBpushID);*/ // for now pushing every log to remote server's DB		
@@ -106,19 +108,18 @@
 			// TBD: do some form of checking the timestamps on each param (accln, locn etc) 
 			// if they are close enough to curr time then send else (??)may be some kind of avg
 			// if they are close to each other.
-			
 			var now = new Date();
 			//now.format();
 			
 			//alert('now ' + now.toString());
 			
-			// URL/a/record/ type/         time/                                   lat/                       long/                           x/                    y/                  z/             [string/bool/imp/start/end/term]
-			var uri = rootURI + '1/' + encodeURIComponent(now.toString()) + '/' + currLat.toString() + '/' + currLon.toString() + '/' + ax.toString() + '/' + ay.toString() + '/' + az.toString() + '/' + "null/false/0/null/null/false";
+			// URL/a/record/ type/         time/                                   lat/                       long/                           x/                    y/                  z/
+			var uri = rootURI + '0/' + encodeURIComponent(now.toString()) + '/' + currLat.toString() + '/' + currLon.toString() + '/' + ax.toString() + '/' + ay.toString() + '/' + az.toString();
 			
 			alert(uri);
 			//alert('sent');
 			doRequest(uri);						
-			
+		
 			currLat = null;
 			currLon = null;
 			ax = null;
@@ -127,16 +128,6 @@
 			aTime = null;
 			lTime = null;			
 		}
-	}
-	
-	function AppsDataLogger()
-	{
-		// push data to local DB - this happens only when something significant happens
-		// like FG<->BG switching, app termination, or user stops the tracking etc
-		
-		// 1. List of App Names
-		// 2. FG/BG ie importance
-		// 3. start/end times, terminated
 	}
 	
 	function PhoneCallsLogger()
