@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  
+    <title>App List</title>
+    
+    <style type="text/css">
+        html, body, #geoLocation {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+    </style>
+    
+    <script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript" charset="utf-8">
+	
+    
+    var db = openDatabase('mydb', '1.0', 'Test DB', 2 * 1024 * 1024);
+    var map;
+    
+    google.maps.event.addDomListener(window, 'load', setup);
+    
+    function setup() 
+    {
+    
+        db.transaction(function (tx) {
+        
+        tx.executeSql('SELECT * FROM PEVENT WHERE id in (SELECT MAX(id) FROM PEVENT)', [], function (tx, results){
+        
+           alert("LEGNTH"+results.rows.length);
+           alert("LAT"+results.rows.item(0).latitude);
+           alert("LAT"+results.rows.item(0).longitude);
+             
+          var myLocation = new google.maps.LatLng(results.rows.item(0).latitude, results.rows.item(0).longitude);
+          
+          alert("MYLOCATION"+myLocation);
+          
+          map  = new google.maps.Map(document.getElementById('geoLocation'), {
+	                             mapTypeId: google.maps.MapTypeId.ROADMAP,
+ 	                             center: myLocation,
+	                             zoom: 15
+                                 });
+          },null);
+        });     
+                            
+        db.transaction(function (tx) {
+        tx.executeSql('SELECT * FROM PEVENT', [], function (tx, results){
+           alert("rows"+results.rows.length);
+            for(var i=1;i<results.rows.length;i++)
+            {  
+                
+                marker = new google.maps.Marker({
+                            position: new google.maps.LatLng(results.rows.item(i).latitude,results.rows.item(i).longitude),
+                            map: map,
+                            animation: google.maps.Animation.DROP
+                            });
+                 
+                 attachSecretMessage(marker, i,results.rows.item(i).date);
+            }
+            
+       },null);
+     });  
+  }
+        
+  function attachSecretMessage(marker, number, time) 
+  {
+    
+    var infowindow = new google.maps.InfoWindow(
+      { content: time,
+        size: new google.maps.Size(200,200)
+      });
+  
+    google.maps.event.addListener(marker, 'click', function() {
+    infowindow.open(map,marker);
+      });
+  }
+   
+   
+    </script>
+  </head>
+  
+  <body>
+  <div id="geoLocation"> Waiting to List Running Apps </div>        
+  </body>
+</html>
