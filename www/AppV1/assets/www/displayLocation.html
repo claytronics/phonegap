@@ -28,11 +28,7 @@
         db.transaction(function (tx) {
         
         tx.executeSql('SELECT * FROM PEVENT WHERE id in (SELECT MAX(id) FROM PEVENT)', [], function (tx, results){
-        
-           alert("LEGNTH"+results.rows.length);
-           alert("LAT"+results.rows.item(0).latitude);
-           alert("LAT"+results.rows.item(0).longitude);
-             
+          
           var myLocation = new google.maps.LatLng(results.rows.item(0).latitude, results.rows.item(0).longitude);
           
           alert("MYLOCATION"+myLocation);
@@ -50,7 +46,8 @@
            alert("rows"+results.rows.length);
             for(var i=1;i<results.rows.length;i++)
             {  
-                
+                alert("LATS"+ results.rows.item(i).latitude);
+                alert("LONG"+ results.rows.item(i).longitude);
                 marker = new google.maps.Marker({
                             position: new google.maps.LatLng(results.rows.item(i).latitude,results.rows.item(i).longitude),
                             map: map,

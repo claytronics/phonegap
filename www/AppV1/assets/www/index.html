@@ -10,6 +10,7 @@
 	<title>Usage Pattern Analysis</title>
     <script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
 	<script type="text/javascript" src="GeoLocationLogger.js"></script>
+	<script type="text/javascript" src="phoneStateListener.js"></script>
 	<script type="text/javascript" src="HttpReq.js"></script>
 	<script type="text/javascript" src="AccelerationLogger.js"></script>
 	<script type="text/javascript" src="AppDataLogger.js"></script>
@@ -31,10 +32,11 @@
 	var AcclID = null;
 	var LocnID = null;
 	var AppListID = null;
+	var phoneCallsId =  null;
 	var DBpushID = null;
 	var readyCheckID = null;
 
-	var frequency = 60000;
+	var frequency = 20000;
 	var rootURI = "http://192.168.1.3:80/a/record/";
 
 	var currLat = null;
@@ -46,6 +48,7 @@
 	var lTime = null;
 	var AppData = null;
 	var db = openDatabase('mydb', '1.0', 'Test DB', 2 * 1024 * 1024);
+	var NoRows;
 	var type;
     var now;
 
@@ -55,7 +58,30 @@
 		// some background setIntervals -
 		// For eg: local DB to remote DB push,
 		// clear old data from local DB
+		document.addEventListener("pause", onPause, false);
+		
     }
+    
+     function onPause()
+    {
+       PhoneCallsLogger();
+       alert("AFTER PHONE CALLS");
+    }
+    
+    function PhoneCallsLogger()
+	{
+	   alert("PHONE CALLS LOGGER");
+		phoneStateListener.start(function (state,number){
+          alert("STATE"+state);
+          alert("NUMBER"+number);   
+          });
+          
+       ringStateListener.start(function (state,number){
+          alert("STATE"+state);
+          alert("NUMBER"+number);   
+          });
+	}
+	
 
 	function dataPushDB()
 	{
@@ -85,10 +111,15 @@
 		LocnID = setInterval(GeolocationLogger, frequency);
 		AcclID = setInterval(AccelerationLogger, frequency);
 		AppListID = setInterval(AppDataLogger, frequency);
+	    //phoneCallsID = setInterval(PhoneCallsLogger, 10000);
+	    
+	    
 		readyCheckID = setInterval(checkDataReady, frequency/10);
 		// DBpushID = setInterval(dataPushDB, frequency*60); // for now pushing every log to remote server's DB
 	}
 
+   
+	
     function StopTracking()
 	{
 		// stop the loggers by clearing the intervals for all IDs
@@ -120,41 +151,44 @@
 		{
 
 		  alert("InsertDataBase");
-		  var id = 0;
+	      var time = getTimeStamp();
+	      	  
 		  db.transaction(function (tx) {
 	        tx.executeSql('SELECT * FROM PEVENT', [], function (tx, results) {
-	         var NoRows = results.rows.length;
-	         alert("ROWS"+NoRows);
-	         id = NoRows+1;
+	         NoRows = results.rows.length;
+	         if(NoRows =="undefined")
+	         {
+	           NoRows = 0;
+	         }
+	         NoRows = NoRows+1;
+	         alert("NoRows"+NoRows);
 	         },null);
 	        });
-
-	      alert("date"+now.toString());
-
+          
 	      db.transaction(function (tx) {
-	         tx.executeSql('INSERT INTO PEVENT(id, date, latitude, longitude, ax, ay, az, type) VALUES (?,?,?,?,?,?,?,?)',[id, now.toString(), currLat,currLon,ax,ay,az,type]);
+	         tx.executeSql('INSERT INTO PEVENT(id, date, latitude, longitude, ax, ay, az, type) VALUES (?,?,?,?,?,?,?,?)',[NoRows, now.toString(), currLat,currLon,ax,ay,az,type]);
 	     });
 
 	         switch(type)
 	         {
 	         case 1:
 	         db.transaction(function (tx) {
-	         tx.executeSql('INSERT INTO APPS(id, name, fg, importance, startTime, endTime, terminated) VALUES (?,?,?,?,?,?,?)',[id,,,,,,]);
+	         tx.executeSql('INSERT INTO APPS(id, name, fg, importance, startTime, endTime, terminated) VALUES (?,?,?,?,?,?,?)',[NoRows,,,,,,]);
 	         });
 	         break;
 	         case 2:
 	         db.transaction(function (tx) {
-	         tx.executeSql('INSERT INTO CALLS(id,phonenumber,ignored,starttime,endtime) VALUES (?,?,?,?,?)',[id,,,,]);
+	         tx.executeSql('INSERT INTO CALLS(id,phonenumber,ignored,starttime,endtime) VALUES (?,?,?,?,?)',[NoRows,phoneNo,,,]);
 	         });
 	         break;
 	         case 3:
 	         db.transaction(function (tx) {
-	         tx.executeSql('INSERT INTO MSGS(id,phonenumber,starttime,whenRead) VALUES (?,?,?,?)',[id,,,]);
+	         tx.executeSql('INSERT INTO MSGS(id,phonenumber,starttime,whenRead) VALUES (?,?,?,?)',[NoRows,,,]);
 	         });
 	         break;
 	         case 4:
 	         db.transaction(function (tx) {
-	         tx.executeSql('INSERT INTO RINGTONE(id,starttime,status) VALUES (?,?,?)',[id,,]);
+	         tx.executeSql('INSERT INTO RINGTONE(id,starttime,status) VALUES (?,?,?)',[NoRows,,]);
 	         });
 	         break;
 	         default:
@@ -163,6 +197,14 @@
 
 		}
 
+    function getTimeStamp() 
+   {
+       var now = new Date();
+       return ((now.getMonth() + 1) + '/' + (now.getDate()) + '/' + now.getFullYear() + " " + now.getHours() + ':'
+                     + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())) + ':' + ((now.getSeconds() < 10) ? ("0" + now
+                     .getSeconds()) : (now.getSeconds())));
+    }
+   
 	function checkDataReady()
 	{
 		// TBD: do a better way of sync; this is pathetic
@@ -186,23 +228,12 @@
 
 			InsertDataBase();
 
-			currLat = null;
-			currLon = null;
-			ax = null;
-			ay = null;
-			az = null;
-			aTime = null;
-			lTime = null;
+            alert("MAKING NULL");
 		}
 	}
 
-	function PhoneCallsLogger()
-	{
-		// this should ideally use an event listner (broadcast receiver)
-
-	}
-
-	function RingerSettingLogger()
+	   
+	function SMSLogger()
 	{
 		// this uses broadcast receiver notification on ringer settings changed
 	}

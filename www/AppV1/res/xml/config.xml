@@ -56,6 +56,9 @@
     <plugin name="Globalization" value="org.apache.cordova.Globalization"/>
     <plugin name="InAppBrowser" value="org.apache.cordova.InAppBrowser"/>
     <plugin name="AppTracker" value="org.apache.cordova.plugin.AppTracker"/>
+    <plugin name="phoneStateListener" value="org.apache.cordova.plugin.phoneStateListener"/>
+    <plugin name="ringStateListener" value="org.apache.cordova.plugin.ringStateListener"/>
+    <plugin name="phoneStateBroadCastReceiver" value="org.apache.cordova.plugin.phoneStateBroadCastReceiver"/>
 </plugins>
 </cordova>
 
