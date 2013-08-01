@@ -6,8 +6,10 @@
 
 var actions = {
     'login': User.login,
+    'newuser': User.newuser,
     'record': Info.record,
-    'getevents': Info.getevents,
+    'getevents': Info.getEvents,
+    'info': Info.getInfo,
     'getsome': Info.getsome,
     'f': Item.find
 };
