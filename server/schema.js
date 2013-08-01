@@ -10,6 +10,10 @@
 	"fields": 
 	[
 	    {
+		"type": "!DBID",
+		"name": "user"
+	    },
+	    {
 		"type": "!Date",
 		"name": "date"
 	    },
@@ -157,7 +161,8 @@
 	    },
 	    {
 		"type": "!string",
-		"name": "email"
+		"name": "email",
+		"key": "unique"
 	    }
 	]
     }
