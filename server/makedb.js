@@ -189,6 +189,7 @@ function createClass(obj)
     // convert to front end
     fs.writeSync(out, rewrite(templates.forfrontendHeader, obj));
     var clsrx = new RegExp("[^a-zA-Z0-9_.]*("+obj.class+")[^a-zA-Z0-9_.]*");
+	fs.writeSync(out, "\trecord.id = this.id;\n");
     for (var i=0; i<obj.fields.length; i++) {
 	    var f = obj.fields[i];
 	    if (('notinfrontend' in f)&&(f.notinfrontend == true)) continue;
