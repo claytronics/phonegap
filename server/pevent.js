@@ -4,9 +4,10 @@
 
 var PhoneEvent = require('./db/pevent.js');
 
-PhoneEvent.create = function(type, time, lati, longi, x, y, z)
+PhoneEvent.create = function(uid, type, time, lati, longi, x, y, z)
 {
     var pe = new PhoneEvent();
+    pe.user = uid;
     pe.type = type;
     pe.time = new Date(time);
     pe.latitude = lati;
