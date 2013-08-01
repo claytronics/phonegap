@@ -1,3 +1,22 @@
+UserName is to be added in the each of the collections.
+Please find below the list of select queries required.
+
+URL/a/pevent/fromDate/toDate --> id,date,lat,long,accx,accy,accz,type
+URL/a/pevent/id --> id,date,lat,long,accx,accy,accz,type
+
+URL/a/apps/fromDate/toDate --> id,name,fg,importance,startTime,endTime,terminated
+URL/a/apps/name/-->id,name,fg,importance,startTime,endTime,terminated
+URL/a/apps/id-->id,name,fg,importance,startTime,endTime,terminated
+
+URL/a/calls/fromDate/toDate -->id,phonenumber,ignored,startTime,endTime
+URL/a/calls/id-->id,phonenumber,ignored,startTime,endTime
+
+URL/a/msgs/fromDate/toDate -->id,phonenumber,starttime,whenRead
+URL/a/msgs/id-->id,phonenumber,starttime,whenRead
+
+URL/a/ringtone/fromDate/toDate -->id,startTime,Status
+URL/a/ringtone/id-->id,startTime,Status
+
 Event:
 time, lat, long, accelx, accely, accelz, id, eventtype
 date, float, float, float, float, float, ID, int
@@ -19,6 +38,9 @@ ringtone
 id, status (on, off, vibrate)
 
 URL/a/login/user-email/password
+
+wget -O x http://localhost:8080/a/record/51f295832730d92f59000001/1/Thu%2C%2018%20Jul%202013%2020%3A26%3A22%20GMT/100.1/200.2/1.2/2.3/3.4/foo/true/203/Thu%2C%2018%20Jul%202013%2020%3A20%3A22%20GMT/Thu%2C%2018%20Jul%202013%2020%3A22%3A22%20GMT/false
+
 URL/a/record/type/time/lat/long/x/y/z/ [string/bool/imp/start/end/term]
 				       [number/start/end/ignored]
 				       [number/start/when]
@@ -27,3 +49,12 @@ URL/a/record/type/time/lat/long/x/y/z/ [string/bool/imp/start/end/term]
 URL/a/getevents/from/to  -> return a list of ids
 URL/a/getsome/from/to/type -> return a list of ids
 URL/a/find/id -> return info for a particular id
+
+
+
+examples:
+
+wget -O x http://localhost:8080/a/newuser/john
+wget -O x http://localhost:8080/a/login/john
+wget -O x http://localhost:8080/a/getevents/51f295832730d92f59000001/5
+wget -O x http://localhost:8080/a/info/51f296a07b7d75a459000002/51f2966c7b7d75a459000001
