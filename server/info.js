@@ -158,7 +158,7 @@ Info.getEvents = function(response, args)
  * @param {!Responder} response
  * @param {!Array.<!string>} args
  *
- * URL/a/getevents/uid/id [/id ...]
+ * URL/a/info/id [/id ...]
  *
  **/
 Info.getInfo = function(response, args)
@@ -172,13 +172,16 @@ Info.getInfo = function(response, args)
 	PhoneEvent.find(id, function(obj) {
 	    var co = obj.forFrontEnd(obj);
 	    var addto = function(so) {
+		console.log('Found subpart: %j', so);
 		var sobj = so.forFrontEnd(so);
+		console.log('FE subpart: %j', sobj);
 		for (x in sobj) {
-		    co.x = sobj.x;
+		    co[x] = sobj[x];
 		}
 		list.push(co);
 		synch.done(1);
 	    };
+	    console.log('Found type: %d\n%j\nFE:%j', obj.type, obj, co);
 	    switch (obj.type) {
 	    case Info.type.None:
 		list.push(co);
