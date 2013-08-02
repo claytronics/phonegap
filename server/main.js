@@ -25,7 +25,6 @@ GenCache = dbo.GenCache;
 Cookies = (/** @type {function(new:Cookies, http.ServerRequest, http.ServerResponse)} */ require( "cookies" ));
 
 PhoneEvent = require('./pevent.js');
-console.log('pe=%s', PhoneEvent.create);
 var list = require('./data.js');
 Application = list[0];
 Call = list[1];
