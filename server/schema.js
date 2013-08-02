@@ -40,10 +40,6 @@
 	    {
 		"type": "!number",
 		"name": "type"
-	    },
-	    {
-		"type": "!DBID",
-		"name": "id"
 	    }
 	]
     },
