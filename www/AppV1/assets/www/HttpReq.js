@@ -3,7 +3,6 @@ var myxmlhttp;
 //doRequest();
 
 function doRequest (url) {
-	/*var url = "http://localhost/a/record/1/Thu%2C 18 Jul 2013 20%3A26%3A22 GMT/100.1/200.2/1.2/2.3/3.4/foo/true/203/Thu%2C 18 Jul 2013 20%3A20%3A22 GMT/Thu%2C 18 Jul 2013 20%3A22%3A22 GMT/false";*/
 	myxmlhttp = CreateXmlHttpReq(resultHandler);
 
 	if (myxmlhttp) {
@@ -19,7 +18,7 @@ function resultHandler () {
 	if (myxmlhttp.readyState == 4) {
 		// success
 		if (myxmlhttp.status == 200) {
-			//alert("Success!");
+			alert("Success!");
 			// myxmlhttp.responseText is the content that was received from the request
 
 			// Registration : in the registration process xmlRootNode return current status that user registered or not.		

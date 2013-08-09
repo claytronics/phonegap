@@ -5,9 +5,7 @@
 <head>
   <script src="jpgraph.js" type="text/javascript" charset="utf-8"></script>
 </head>
-    <div id="AcclerometerGraph"></div>
-	<div id="AppUsageGraph"></div>
-	<title>Usage Pattern Analysis</title>
+    <title>Usage Pattern Analysis</title>
     <script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
 	<script type="text/javascript" src="GeoLocationLogger.js"></script>
 	<script type="text/javascript" src="phoneStateListener.js"></script>
@@ -36,9 +34,9 @@
 	var DBpushID = null;
 	var readyCheckID = null;
 
-	var frequency = 20000;
-	var rootURI = "http://192.168.1.3:80/a/record/";
-
+	var frequency = 5000;
+	var rootURI = "http://128.237.197.179:80/a/record/5203e92b829fc75508000001/";
+	
 	var currLat = null;
 	var currLon = null;
 	var ax = null;
@@ -65,20 +63,20 @@
      function onPause()
     {
        PhoneCallsLogger();
-       alert("AFTER PHONE CALLS");
+       //alert("AFTER PHONE CALLS");
     }
     
     function PhoneCallsLogger()
 	{
-	   alert("PHONE CALLS LOGGER");
+	   //alert("PHONE CALLS LOGGER");
 		phoneStateListener.start(function (state,number){
-          alert("STATE"+state);
-          alert("NUMBER"+number);   
+          //alert("STATE"+state);
+          //alert("NUMBER"+number);   
           });
           
        ringStateListener.start(function (state,number){
-          alert("STATE"+state);
-          alert("NUMBER"+number);   
+          //alert("STATE"+state);
+          //alert("NUMBER"+number);   
           });
 	}
 	
@@ -108,14 +106,14 @@
 		// set repeat intervals for each of the loggers
 		alert('Starting to Track Usage Data');
 		CreateTables();
-		LocnID = setInterval(GeolocationLogger, frequency);
-		AcclID = setInterval(AccelerationLogger, frequency);
-		AppListID = setInterval(AppDataLogger, frequency);
+		//LocnID = setInterval(function(){GeolocationLogger(frequency)}, frequency);
+		AcclID = setInterval(function(){AccelerationLogger(frequency)}, frequency);
+		AppListID = setInterval(function(){AppDataLogger(frequency)}, frequency);
 	    //phoneCallsID = setInterval(PhoneCallsLogger, 10000);
 	    
 	    
-		readyCheckID = setInterval(checkDataReady, frequency/10);
-		// DBpushID = setInterval(dataPushDB, frequency*60); // for now pushing every log to remote server's DB
+		readyCheckID = setInterval(function(){checkDataReady()}, frequency/10);
+		// DBpushID = setInterval(function(){dataPushDB()}, frequency*60); // for now pushing every log to remote server's DB
 	}
 
    
@@ -148,57 +146,91 @@
 	}
 
 	function InsertDataBase()
-		{
+	{
 
-		  alert("InsertDataBase");
+		  alert("InsertDataBase " + AppData.join());
 	      var time = getTimeStamp();
-	      	  
-		  db.transaction(function (tx) {
-	        tx.executeSql('SELECT * FROM PEVENT', [], function (tx, results) {
+	      
+	      // insert sensor data to PEVENTS table
+	      if((currLat != null) && (currLon != null) && (ax != null) && (ay != null) && (az != null))
+	      {	  
+			  db.transaction(function (tx) {
+		        tx.executeSql('SELECT * FROM PEVENT', [], function (tx, results) {
+		         NoRows = results.rows.length;
+		         if(NoRows =="undefined")
+		         {
+		           NoRows = 0;
+		         }
+		         NoRows = NoRows+1;
+		        // alert("NoRows"+NoRows);
+		         },null);
+		        });
+	          
+		      db.transaction(function (tx) {
+		      		tx.executeSql('INSERT INTO PEVENT(id, date, latitude, longitude, ax, ay, az, type) VALUES (?,?,?,?,?,?,?,?)',[NoRows, time, currLat,currLon,ax,ay,az,type]);
+		         	currLat = null;
+					currLon = null;
+					ax = null;
+					ay = null;
+					az = null;
+					aTime = null;
+					lTime = null;					         	
+		     });
+		}
+		
+		// insert app data to APPS table
+		if(AppData != null)
+		{
+			alert('App logger success ' + AppData.length);
+			for(var i = 0; i < Math.floor(AppData.length/11) * 11; i=i+11)
+			{
+				db.transaction(function (tx) {
+		        tx.executeSql('SELECT * FROM PEVENT', [], function (tx, results) {
+		         NoRows = results.rows.length;
+		         if(NoRows =="undefined")
+		         {
+		           NoRows = 0;
+		         }
+		         NoRows = NoRows+1;
+		         alert("NoRows"+NoRows);
+		         },null);
+		        });
+		        
+				db.transaction(function (tx) {
+				alert("Inserting App Accl Data " + AppData.join());
+	      		tx.executeSql('INSERT INTO PEVENT(id, date, latitude, longitude, ax, ay, az, type) VALUES (?,?,?,?,?,?,?,?)',[NoRows, time, AppData[i+0], AppData[i+1],AppData[i+2],AppData[i+3],AppData[i+4],type]);
+	         	});
+	        }
+	         	
+         	db.transaction(function (tx) {
+	        tx.executeSql('SELECT * FROM APPS', [], function (tx, results) {
 	         NoRows = results.rows.length;
 	         if(NoRows =="undefined")
 	         {
 	           NoRows = 0;
 	         }
 	         NoRows = NoRows+1;
-	         alert("NoRows"+NoRows);
+	         alert("Apps NoRows"+NoRows);
 	         },null);
 	        });
-          
-	      db.transaction(function (tx) {
-	         tx.executeSql('INSERT INTO PEVENT(id, date, latitude, longitude, ax, ay, az, type) VALUES (?,?,?,?,?,?,?,?)',[NoRows, now.toString(), currLat,currLon,ax,ay,az,type]);
-	     });
-
-	         switch(type)
-	         {
-	         case 1:
-	         db.transaction(function (tx) {
-	         tx.executeSql('INSERT INTO APPS(id, name, fg, importance, startTime, endTime, terminated) VALUES (?,?,?,?,?,?,?)',[NoRows,,,,,,]);
-	         });
-	         break;
-	         case 2:
-	         db.transaction(function (tx) {
-	         tx.executeSql('INSERT INTO CALLS(id,phonenumber,ignored,starttime,endtime) VALUES (?,?,?,?,?)',[NoRows,phoneNo,,,]);
-	         });
-	         break;
-	         case 3:
-	         db.transaction(function (tx) {
-	         tx.executeSql('INSERT INTO MSGS(id,phonenumber,starttime,whenRead) VALUES (?,?,?,?)',[NoRows,,,]);
-	         });
-	         break;
-	         case 4:
-	         db.transaction(function (tx) {
-	         tx.executeSql('INSERT INTO RINGTONE(id,starttime,status) VALUES (?,?,?)',[NoRows,,]);
-	         });
-	         break;
-	         default:
-	         break;
-	         }
-
-		}
+	        
+			db.transaction(function (tx) {
+				for(var i = 0; i < Math.floor(AppData.length/11) * 11; i=i+11)
+				{
+					alert("Inserting App Usage Data " + AppData.join());
+	      		
+					tx.executeSql('INSERT INTO APPS(id, name, fg, importance, startTime, endTime, terminated) VALUES (?,?,?,?,?,?,?)',[NoRows+(i/11),AppData[i+5],AppData[i+6],AppData[i+7],AppData[i+8],AppData[i+9],AppData[i+10]]);
+					alert('inserted into apps');
+				}
+				alert("Making AppData = null");	
+				AppData = null;				
+			});		
+						
+		}   
+	}
 
     function getTimeStamp() 
-   {
+   	{
        var now = new Date();
        return ((now.getMonth() + 1) + '/' + (now.getDate()) + '/' + now.getFullYear() + " " + now.getHours() + ':'
                      + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())) + ':' + ((now.getSeconds() < 10) ? ("0" + now
@@ -207,28 +239,23 @@
    
 	function checkDataReady()
 	{
+		//alert('checkDataReady');
 		// TBD: do a better way of sync; this is pathetic
 		if((currLat != null) && (currLon != null) && (ax != null) && (ay != null) && (az != null))
 		{
 			// TBD: do some form of checking the timestamps on each param (accln, locn etc)
 			// if they are close enough to curr time then send else (??)may be some kind of avg
 			// if they are close to each other.
-			type = 1;
-			now = new Date();
-			//now.format();
+			//alert('checkDataReady uri prep');
+			type = 0;
+			
+				//URL/a/record/  type/         time/                                   lat/                       long/                 x/                    y/                  z/
+			var uri = rootURI + '0/' + encodeURIComponent(getTimeStamp()) + '/' + currLat.toString() + '/' + currLon.toString() + '/' + ax.toString() + '/' + ay.toString() + '/' + az.toString();
 
-			//alert('now ' + now.toString());
+			//alert(uri);
+			doRequest(uri);
 
-			// URL/a/record/ type/         time/                                   lat/                       long/                           x/                    y/                  z/
-			var uri = rootURI + '0/' + encodeURIComponent(now.toString()) + '/' + currLat.toString() + '/' + currLon.toString() + '/' + ax.toString() + '/' + ay.toString() + '/' + az.toString();
-
-			alert(uri);
-			//alert('sent');
-			//doRequest(uri);
-
-			InsertDataBase();
-
-            alert("MAKING NULL");
+			InsertDataBase(); 			          
 		}
 	}
 
@@ -249,14 +276,16 @@
 	function ShowAppUsageGraph(from, to){
 		// get data from local/remote DB and show on graph
 		// get relevant setting from user via UI
-
+		//alert('usage graph');
+		window.location = "AppUsageGraph.html";
 		// default to last 24Hrs if input params invalid
     }
 
 	function ShowAccelerationGraph(from, to){
 		// get data from local/remote DB and show on graph
 		// get relevant setting from user via UI - from-to time
-
+		//alert('accl graph html');
+		window.location = "AccelerationGraph.html";
 		// default to last 24Hrs if input params invalid
 	}
 
@@ -283,7 +312,7 @@
 			<tr>
 			<td></td>
 			<td>
-			   <button name="buttonClick" onclick="ShowAcclerationGraph()">Show Acceleration</button>
+			   <button name="buttonClick" onclick="ShowAccelerationGraph()">Show Acceleration</button>
 			</td>
 			</tr>
 

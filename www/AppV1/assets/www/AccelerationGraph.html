@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="jpgraph.js" type="text/javascript" charset="utf-8"></script>
+</head>
+    <div id="accl_graph"></div>
+	<title>Accl Graph</title>
+    <script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
+	<script type="text/javascript" src="canvasjs.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+    
+    // The watch id references the current `watchAcceleration`
+    var watchID = null;
+
+    // Wait for Cordova to load
+    //
+    document.addEventListener("deviceready", onDeviceReady, false);
+    
+    var mainID=0;
+    var index = 0;
+    var SampledTime = new String();
+    var dailyAcclArr = new Array();
+   
+    var db = openDatabase('mydb', '1.0', 'Test DB', 2 * 1024 * 1024);
+    
+    function onDeviceReady() {
+		//alert("onDeviceReady");
+		prepareGraphData();			
+    }
+    
+    function prepareGraphData()
+    {
+    	// get the info from local DB
+    	//alert('DB retrieve');
+		db.transaction(function (tx) {
+        tx.executeSql('SELECT * FROM PEVENT', [], function (tx, results){
+           //alert("rows"+results.rows.length);
+            for(var i=1;i<results.rows.length;i++)
+            {  
+                //alert("Accl. "+ results.rows.item(i).ax + results.rows.item(i).ay + results.rows.item(i).az);
+                dailyAcclArr[i] = (results.rows.item(i).ax + results.rows.item(i).az + results.rows.item(i).ay).toString();
+                //alert(dailyAcclArr[i]);
+                SampledTime = SampledTime.concat(results.rows.item(i).date + '|');
+            }
+            showGraph();
+            },null);
+     	});     
+    }
+    
+    function showGraph(){
+        /**
+         * set graph data
+         */
+       //alert('inside accl graph');
+       var tmp = new Array();
+       var xLbl = SampledTime;
+       
+        /* clear previous plot */
+		document.getElementById("accl_graph").innerHTML = '';
+      		 
+       //alert('Xaxis ' + SampledTime);
+       
+       if(dailyAcclArr.length>50)
+       {
+       		var index = 0;
+       		var xSplit = xLbl.split("|");
+       		xLbl = "";
+       		//alert(xSplit.length);
+       		for(var i=0;i<xSplit.length;i++)
+       		{
+       			//alert(xSplit.length + " " + dailyAcclArr.length);
+       			if(tmp[index] == null)
+       				tmp[index] = 0;
+       				
+       			if((i%(Math.floor(xSplit.length/25))) == 0)
+       			{
+       				//alert('good i='+ i + xSplit[i].toString() );
+       				//alert("time" + SampledTime);
+       				xLbl = xLbl.concat(xSplit[i].toString() + '|');
+       				tmp[index] = (Number(tmp[index])/(Math.floor(xSplit.length/25))).toString();
+       				//alert(tmp[index] + ' ' + index + ' ' + xSplit.length);
+       				index++;       				
+       			}
+       			else
+       			{	
+       				//alert('bad i='+ i + xSplit[i].toString());
+       				//xLbl = xLbl.concat(' |');
+       				if(i<dailyAcclArr.length)       				
+       					tmp[index] = (Number(tmp[index]) + Number(dailyAcclArr[i])).toString();
+       				//alert("else" + tmp[index] + ' ' + index + ' ' + xSplit.length);       				 
+       			}
+       		}       		
+       }
+       else
+       	  tmp = dailyAcclArr;
+       
+       //alert('rendering graph now' + dailyAcclArr.length);
+       
+       var data = ({series1data: tmp});
+        /**
+         * draw the graph
+         */
+        var AcclGraph = new JpGraph(
+                'line',
+                'accl_graph',
+                data,
+                {
+                  backgroundColor       : '#f9f5da',
+                  series1               : "color:#ea7532; scale:left",
+                  xLabels               : xLbl,
+                  gridColSpacing        : 600/tmp.length,
+                  title                 : "Accelerometer Plot",
+                  titleFontSize         : "24px",
+                  titleFontWeight       : "normal",
+                  titleFontStyle        : "normal",
+                  titleFontFamily       : "Helvetica, Arial, Verdana, sans-serif",
+                  titleFontColor        : "#000",
+                  xTitle                : "Time of the Day Hrs:Mins",
+                  xTitleFontSize        : 16,
+                  xTitleFontWeight      : "normal",
+                  xTitleFontStyle       : "normal",
+                  xTitleFontFamily      : "Helvetica, Arial, Verdana, sans-serif",
+                  xTitleFontColor       : "#444",
+                  yTitle                : "Acceleration",
+                  yTitleFontSize        : 16,
+                  yTitleFontWeight      : "normal",
+                  yTitleFontStyle       : "normal",
+                  yTitleFontFamily      : "Helvetica, Arial, Verdana, sans-serif",
+                  yTitleFontColor       : "#444",
+                  
+                 });
+                 
+                         
+    }        
+	</script>	
+</html>

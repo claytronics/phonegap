@@ -1,0 +1,193 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="jpgraph.js" type="text/javascript" charset="utf-8"></script>
+</head>
+    <div id="AppUsageGraph"></div>
+	<title>App Usage Graph</title>
+    <script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
+	<script type="text/javascript" src="canvasjs.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+    
+    // The watch id references the current `watchAcceleration`
+    var watchID = null;
+
+    // Wait for Cordova to load
+    //
+    document.addEventListener("deviceready", onDeviceReady, false);
+    
+    var mainID=0;
+    var index = 0;
+    var AppNames = new String();
+    var AppUsageTimes = new Array();
+   
+    var db = openDatabase('mydb', '1.0', 'Test DB', 2 * 1024 * 1024);
+    
+    function onDeviceReady() {
+		//alert("onDeviceReady");
+		prepareGraphData();			
+    }
+    
+    function prepareGraphData()
+    {
+    	// get the info from local DB
+    	//alert('DB retrieve');
+		db.transaction(function (tx) {
+        tx.executeSql('SELECT * FROM APPS', [], function (tx, results){
+            alert("rows"+results.rows.length);
+            for(var i=1;i<results.rows.length;i++)
+            {  
+            	var found = 0;
+            	var AppArr = AppNames.split("|");
+            	alert(AppArr.join());
+            	for(var j=0;j<AppArr.length;j++)
+            	{            		
+            		if(AppArr[j] == results.rows.item(i).name)
+            		{
+            			found = 1;
+		                alert("Apps Usage "+ results.rows.item(i).name + ' ' + results.rows.item(i).fg + ' ' + results.rows.item(i).startTime + ' ' + results.rows.item(i).endTime);
+		                var start = new Date(results.rows.item(i).startTime);
+		            	var end = new Date(results.rows.item(i).endTime);
+	            		AppUsageTimes[j] = AppUsageTimes[j] + ((end.getTime() - start.getTime())/1000);
+		                alert("Repeat App " + AppUsageTimes[j]);               
+		                break;
+	                }
+	            } 
+	            if(found == 0)
+	            {
+	            	alert("AppName " + results.rows.item(i).name + ' ' + results.rows.item(i).startTime + ' ' + results.rows.item(i).endTime);
+	            	AppNames = AppNames.concat(results.rows.item(i).name + '|');
+	            	alert(AppNames);
+	            	// add new element in time arr for this app
+	            	var start = new Date(results.rows.item(i).startTime);
+	            	var end = new Date(results.rows.item(i).endTime);
+	            	
+	            	AppUsageTimes.push((end.getTime() - start.getTime())/1000); // in seconds
+	            	alert(AppUsageTimes.join());
+	            	
+	            	alert("First time App " + AppUsageTimes[AppUsageTimes.length - 1]);
+	            }   
+            }
+            showAppUsageGraph();
+            },null);
+     	});     
+    }
+    
+    function showAppUsageGraph(){
+        /**
+         * set graph data
+         */
+       alert('inside App Usage graph');
+       
+        /* clear previous plot */
+		document.getElementById("AppUsageGraph").innerHTML = '';
+      		 
+       var StringTimes = new Array();
+       
+       for(var i=0;i<AppUsageTimes.length;i++)
+       {
+       		StringTimes[i] = AppUsageTimes[i].toString();
+       }
+       
+       var data = ({series1data: StringTimes});
+        /**
+         * draw the graph
+         */
+        var graph = new JpGraph(
+                'horizontal bar',
+                'AppUsageGraph',
+                data,
+                {
+                  width                 : 800,
+                  height                : 500,
+                  backgroundColor       : '#f9f5da',
+                  series1               : "color:#008bd0; scale:left",
+                  xLabels               : AppNames,
+                  xfontColor            : "#444",
+                  xopacity              : 1.0,
+                  xfontSize             : 12,
+                  xfontWeight           : "normal",
+                  xfontStyle            : "normal",
+                  xfontFamily           : "Helvetica, Arial, Verdana, sans-serif",
+                  xtextAnchor           : "end",
+                  xrotation             : 315,
+                  barWidth              : 23,
+                  barGap                : 20,
+                  displayValues         : true,
+                  titleFontSize         : "24px",
+                  titleFontWeight       : "normal",
+                  titleFontStyle        : "normal",
+                  titleFontFamily       : "Helvetica, Arial, Verdana, sans-serif",
+                  titleFontColor        : "#444",
+                  xTitle                : "Usage in Seconds",
+                  xTitleFontSize        : 16,
+                  xTitleFontWeight      : "normal",
+                  xTitleFontStyle       : "normal",
+                  xTitleFontFamily      : "Helvetica, Arial, Verdana, sans-serif",
+                  xTitleFontColor       : "#444",
+                  yTitle                : "App Names",
+                  yTitleFontSize        : 16,
+                  yTitleFontWeight      : "normal",
+                  yTitleFontStyle       : "normal",
+                  yTitleFontFamily      : "Helvetica, Arial, Verdana, sans-serif",
+                  yTitleFontColor       : "#444",
+                  threeD                : true,
+                  depth                 : 10,
+                  animationTime         : 750,
+                  gridBackgroundColor   : "#dbd39a",
+                  gridBanding           : true,
+                  gridOpacity           : 1.0,
+                  gridBackgroundImage   : "",
+                  gridLineWidth         : 0.3,
+                  gridLineStyle         : ". ",
+                  gridAxisWidth         : 2,
+                  gridAxisStyle         : "- ",
+                  gridNRows             : 6,
+                  gridColSpacing        : 100,
+                  gridRowSpacing        : 50,
+                  gridxPos              : 95,
+                  gridyPos              : 420,
+                  xLabelPre             : "",
+                  xLabelPost            : "",
+                  yLabelColor           : "#777",
+                  yLabelPost            : "s",
+                  x2LabelPre            : "",
+                  x2LabelPost           : "",
+                  y2LabelPre            : "",
+                  y2LabelPost           : "",
+                  ndecplaces            : 0,
+                  ndecplaces2           : 3,
+                  labelFontSize         : 12,
+                  labelFontWeight       : "lighter",
+                  labelFontStyle        : "normal",
+                  labelFontFamily       : "Helvetica, Arial, Verdana, sans-serif",
+                  labelFontColor        : "#000",
+                  xrotation             : 315,
+                  legendXpos            : 650,
+                  legendYpos            : 60,
+                  legendPadding         : 6,
+                  legendRoundRadius     : 6,
+                  legendOpacity         : 0.7,
+                  legendBackground      : true,
+                  legendBackgoundColor  : '#ffffff',
+                  legendBorderColor     : '#888',
+                  legendBorderWidth     : 1,
+                  legendStyle           : 'vertical',
+                  legendTitle           : 'App Usage Graph',
+                  legendTitleFontSize   : 14,
+                  legendTitleFontWeight : 'normal',
+                  legendTitleFontStyle  : 'normal',
+                  legendTitleFontFamily : 'Helvetica, Arial, Verdana, sans-serif',
+                  legendTitleFontColor  : '#000',
+                  legendFontSize        : 12,
+                  legendFontWeight      : 'normal',
+                  legendFontStyle       : 'normal',
+                  legendFontFamily      : 'Helvetica, Arial, Verdana, sans-serif',
+                  legendFontColor       : '#444'
+                });        
+                         
+    }        
+	</script>	
+</html>
