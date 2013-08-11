@@ -106,7 +106,7 @@
 		// set repeat intervals for each of the loggers
 		alert('Starting to Track Usage Data');
 		CreateTables();
-		//LocnID = setInterval(function(){GeolocationLogger(frequency)}, frequency);
+		LocnID = setInterval(function(){GeolocationLogger(frequency)}, frequency);
 		AcclID = setInterval(function(){AccelerationLogger(frequency)}, frequency);
 		AppListID = setInterval(function(){AppDataLogger(frequency)}, frequency);
 	    //phoneCallsID = setInterval(PhoneCallsLogger, 10000);
@@ -148,7 +148,7 @@
 	function InsertDataBase()
 	{
 
-		  alert("InsertDataBase " + AppData.join());
+		  //alert("InsertDataBase " + AppData.join());
 	      var time = getTimeStamp();
 	      
 	      // insert sensor data to PEVENTS table
@@ -181,7 +181,7 @@
 		// insert app data to APPS table
 		if(AppData != null)
 		{
-			alert('App logger success ' + AppData.length);
+			//alert('App logger success ' + AppData.length);
 			for(var i = 0; i < Math.floor(AppData.length/11) * 11; i=i+11)
 			{
 				db.transaction(function (tx) {
@@ -192,12 +192,12 @@
 		           NoRows = 0;
 		         }
 		         NoRows = NoRows+1;
-		         alert("NoRows"+NoRows);
+		         //alert("NoRows"+NoRows);
 		         },null);
 		        });
 		        
 				db.transaction(function (tx) {
-				alert("Inserting App Accl Data " + AppData.join());
+				//alert("Inserting App Accl Data " + AppData.join());
 	      		tx.executeSql('INSERT INTO PEVENT(id, date, latitude, longitude, ax, ay, az, type) VALUES (?,?,?,?,?,?,?,?)',[NoRows, time, AppData[i+0], AppData[i+1],AppData[i+2],AppData[i+3],AppData[i+4],type]);
 	         	});
 	        }
@@ -210,19 +210,19 @@
 	           NoRows = 0;
 	         }
 	         NoRows = NoRows+1;
-	         alert("Apps NoRows"+NoRows);
+	         //alert("Apps NoRows"+NoRows);
 	         },null);
 	        });
 	        
 			db.transaction(function (tx) {
 				for(var i = 0; i < Math.floor(AppData.length/11) * 11; i=i+11)
 				{
-					alert("Inserting App Usage Data " + AppData.join());
+					//alert("Inserting App Usage Data " + AppData.join());
 	      		
 					tx.executeSql('INSERT INTO APPS(id, name, fg, importance, startTime, endTime, terminated) VALUES (?,?,?,?,?,?,?)',[NoRows+(i/11),AppData[i+5],AppData[i+6],AppData[i+7],AppData[i+8],AppData[i+9],AppData[i+10]]);
-					alert('inserted into apps');
+					//alert('inserted into apps');
 				}
-				alert("Making AppData = null");	
+				//alert("Making AppData = null");	
 				AppData = null;				
 			});		
 						

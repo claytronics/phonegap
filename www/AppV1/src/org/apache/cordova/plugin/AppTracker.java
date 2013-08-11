@@ -176,7 +176,7 @@ public class AppTracker extends CordovaPlugin implements SensorEventListener{
 									if(AppDataList == null)
 										AppDataList = lat.toString() + '/' + lon.toString() + '/';
 									else
-										AppDataList += '/' + lat.toString() + '/' + lon.toString() + '/';
+										AppDataList += lat.toString() + '/' + lon.toString() + '/';
 								}
 								else
 								{	

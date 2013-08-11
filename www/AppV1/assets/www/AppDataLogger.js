@@ -6,18 +6,18 @@
 		// 1. List of App Names
 		// 2. FG/BG ie importance
 		// 3. start/end times, terminated
-		alert('app logger');
+		//alert('app logger');
 		cordova.exec(OnSuccessApp, OnErrorApp, "AppTracker", "Running", []);
 	}
 
 	function OnSuccessApp(AppEvent)
 	{
 		// get current accln and locn data; append to App Event data
-		alert('applogger successCB');
+		//alert('applogger successCB');
 		if(AppEvent != null)
 		{
 			AppData = AppEvent.split('/');
-			alert('App logger success ' + AppData.length);
+			//alert('App logger success ' + AppData.length);
 			for(var i = 0; i < Math.floor(AppData.length/11) * 11; i=i+11)
 			{
 				var uri = rootURI + '1/' + encodeURIComponent(getTimeStamp()) + '/' 
@@ -25,11 +25,11 @@
 				+ AppData[i+5] + '/' + AppData[i+6] + '/' + AppData[i+7] + '/' + encodeURIComponent(AppData[i+8]) + '/' + encodeURIComponent(AppData[i+9]) + '/' + AppData[i+10];
 					// lat               lon	                ax                  ay                    az                          
 					// Name              FG?                   Imp                  Start                                    End                                    Term?
-				alert('sending app data ' + uri);
+				//alert('sending app data ' + uri);
 				doRequest(uri);				
 			}
 			type = 1;
-			alert('Calling InsertDB');
+			//alert('Calling InsertDB');
 			InsertDataBase();
 		}
 	}

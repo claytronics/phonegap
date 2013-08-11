@@ -18,7 +18,7 @@ function resultHandler () {
 	if (myxmlhttp.readyState == 4) {
 		// success
 		if (myxmlhttp.status == 200) {
-			alert("Success!");
+			//alert("Success!");
 			// myxmlhttp.responseText is the content that was received from the request
 
 			// Registration : in the registration process xmlRootNode return current status that user registered or not.		
