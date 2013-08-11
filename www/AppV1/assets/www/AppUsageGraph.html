@@ -88,10 +88,30 @@
        var AppArr = AppNames.split("|");
        var SmallAppNames = new String();
        
-       //alert(AppArr.join());
-       for(var i=0;i<AppArr.length;i++)
+       
+       var sortedTimes = AppUsageTimes.slice(0);
+       sortedTimes.sort(function(a,b){return b-a});
+       
+       var sortedAppNames = new Array();
+       
+       // compare the arrays and sort the app names
+       for(var i=0;i<sortedTimes.length;i++)
        {
-       		var name = AppArr[i].split(".");
+       		for(var j=0;j<AppUsageTimes.length;j++)
+	       	{
+	       		if(sortedTimes[i] == AppUsageTimes[j])
+	       		{
+	       			sortedAppNames[i] = AppArr[j];
+	       			AppArr.splice(j, 1);
+	       			AppUsageTimes.splice(j, 1);
+	       			break;
+	       		}
+	       	}	
+       }
+       //alert(AppArr.join());
+       for(var i=0;i<sortedAppNames.length;i++)
+       {
+       		var name = sortedAppNames[i].split(".");
        		//alert("name " + name.join());
 	       	if(name.length > 1)
        		{
@@ -105,9 +125,9 @@
 	       	}	
        } 
         
-       for(var i=0;i<AppUsageTimes.length;i++)
+       for(var i=0;i<sortedTimes.length;i++)
        {
-       		StringTimes[i] = AppUsageTimes[i].toString();
+       		StringTimes[i] = sortedTimes[i].toString();
        }
        
        var data = ({series1data: StringTimes});
