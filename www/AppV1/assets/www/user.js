@@ -20,7 +20,7 @@ var data = null;
 	function getUID()
 	{
 	   var uri = rootURI + 'login/kk';
-	   alert("URI"+uri);
+	   //alert("URI"+uri);
 
 	   if(doRequest(uri,1))
 	   {

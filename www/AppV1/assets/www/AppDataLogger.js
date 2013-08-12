@@ -20,7 +20,7 @@
 			//alert('App logger success ' + AppData.length);
 			for(var i = 0; i < Math.floor(AppData.length/11) * 11; i=i+11)
 			{
-				var uri = rootURI + '1/' + encodeURIComponent(getTimeStamp()) + '/' 
+				var uri = rootURI + 'record/' + uid + '/' + '1/' + encodeURIComponent(getTimeStamp()) + '/' 
 				+ AppData[i+0] + '/' + AppData[i+1] + '/' + AppData[i+2] + '/' + AppData[i+3] + '/' + AppData[i+4] + '/' 
 				+ AppData[i+5] + '/' + AppData[i+6] + '/' + AppData[i+7] + '/' + encodeURIComponent(AppData[i+8]) + '/' + encodeURIComponent(AppData[i+9]) + '/' + AppData[i+10];
 					// lat               lon	                ax                  ay                    az                          
