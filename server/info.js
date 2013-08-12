@@ -80,8 +80,8 @@ Info.record = function(response, args)
 
     var uid = args[Info.recordOffset.UID];
     var type = parseInt(args[Info.recordOffset.Type], 10);
-    var ev = PhoneEvent.create(uid, type, args[Info.recordOffset.Time], 
-			       args[Info.recordOffset.Lat], args[Info.recordOffset.Long], 
+    var ev = PhoneEvent.create(uid, type, args[Info.recordOffset.Time],
+			       args[Info.recordOffset.Lat], args[Info.recordOffset.Long],
 			       args[Info.recordOffset.Ax], args[Info.recordOffset.Ay], args[Info.recordOffset.Az]);
     console.log('Creating event %j', ev);
     ev.insert(function(dev) {
@@ -92,14 +92,14 @@ Info.record = function(response, args)
 	    response.returnJSON({id: dev._id});
 	    return;
 
-	case Info.type.App: obj = Application.create(dev._id, args[Info.recordOffset.Name], 
-					 parseBool(args[Info.recordOffset.Fg]), 
-					 parseInt(args[Info.recordOffset.Imp], 10), 
-					 args[Info.recordOffset.AppStartTime], args[Info.recordOffset.AppEndTime], 
+	case Info.type.App: obj = Application.create(dev._id, args[Info.recordOffset.Name],
+					 parseBool(args[Info.recordOffset.Fg]),
+					 parseInt(args[Info.recordOffset.Imp], 10),
+					 args[Info.recordOffset.AppStartTime], args[Info.recordOffset.AppEndTime],
 					 parseBool(args[Info.recordOffset.Term]));
 	    break;
-	case Info.type.Call: obj = Call.create(dev._id, args[Info.recordOffset.CallNum], 
-				  args[Info.recordOffset.CallStartTime], args[Info.recordOffset.CallEndTime], 
+	case Info.type.Call: obj = Call.create(dev._id, args[Info.recordOffset.CallNum],
+				  args[Info.recordOffset.CallStartTime], args[Info.recordOffset.CallEndTime],
 				  parseBool(args[Info.recordOffset.CallIgnored]));
 	    break;
 
@@ -143,8 +143,10 @@ Info.getEvents = function(response, args)
     console.log("Searching for %s events for %s from %s to %s", type, uid, st, et);
     var query = {user: uid};
     if (type != Info.type.All) query.type = type;
-    if (st != null) query.date = {$gte: st};
-    if (et != null) query.date = {$lte: et};
+    if(st!=null & et!=null)
+      query.date={$gte: st,$lte: et};
+    else if (st != null) query.date = {$gte: st};
+    else if (et != null) query.date = {$lte: et};
     db.advancedQuery(PhoneEvent.table, query, {_id:1}, {}, function(list) {
 	response.returnJSON(list);
     });
@@ -164,7 +166,7 @@ Info.getEvents = function(response, args)
 Info.getInfo = function(response, args)
 {
     var list = [];
-    var synch = new Synchronizer(function () { 
+    var synch = new Synchronizer(function () {
 	response.returnJSON(list);
     }, args.length-1, "gi");
     for (var i=1; i<args.length; i++) {
@@ -209,7 +211,7 @@ Info.getInfo = function(response, args)
 	});
     }
 };
-    
+
 
 
 module.exports = Info;
