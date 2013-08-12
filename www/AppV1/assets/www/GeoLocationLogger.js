@@ -3,8 +3,6 @@
 		// this func is called once every "interval"
 		
 		// get current location and put in local DB
-		//alert('get locn');
-		
 		currLat = null;
 		currLon = null;
 		lTime = null;

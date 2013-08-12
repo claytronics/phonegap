@@ -1,67 +1,77 @@
 var myxmlhttp;
-
 //doRequest();
 
-function doRequest (url) {
-	myxmlhttp = CreateXmlHttpReq(resultHandler);
+function doRequest(url,callReqd) 
+{
+	/*var url = "http://localhost/a/record/1/Thu%2C 18 Jul 2013 20%3A26%3A22 GMT/100.1/200.2/1.2/2.3/3.4/foo/true/203/Thu%2C 18 Jul 2013 20%3A20%3A22 GMT/Thu%2C 18 Jul 2013 20%3A22%3A22 GMT/false";*/
+	
+	myxmlhttp = CreateXmlHttpReq(resultHandler,callReqd);
 
-	if (myxmlhttp) {
+	if (myxmlhttp) 
+	{
 		XmlHttpGET(myxmlhttp, url);
-	} else {
+	} 
+	else 
+	{
 		alert("An error occured while attempting to process your request.");
+		return 0;
 		// provide an alternative here that does not use XMLHttpRequest
 	}
+	
+	return 1;
 }
 
-function resultHandler () {
+function resultHandler () 
+{	
 	// request is 'ready'
-	if (myxmlhttp.readyState == 4) {
+	if (myxmlhttp.readyState == 4) 
+	{
 		// success
-		if (myxmlhttp.status == 200) {
-			//alert("Success!");
-			// myxmlhttp.responseText is the content that was received from the request
-
-			// Registration : in the registration process xmlRootNode return current status that user registered or not.		
-			var responsedata = myxmlhttp.responseXML;
-			var xmlRootNode = responsedata.getElementsByTagName("error")[0].firstChild.nodeValue;
-			//alert(xmlRootNode);
-
-			// Lgoin : after login on forum user get access token, this token used on login success page.
-			var responsedata = myxmlhttp.responseXML;
-			var xmlRootNode = responsedata.getElementsByTagName("authtoken")[0].firstChild.nodeValue;
-			//alert(xmlRootNode);
-			
-
-		} else {
+		if (myxmlhttp.status == 200) 
+		{
+           //var abc = '{"status":0,"msg":"ok","data":{"id":"51f2405898ce6af013000001","name":"kk","email":"kk"}}';
+           var cde = eval('('+myxmlhttp.responseText+')');
+           data = JSON.stringify(cde["data"]);
+		} 
+		else 
+		{
 			alert("There was a problem retrieving the data:\n" + req.statusText);
 		}
 	}
 }
 
-function CreateXmlHttpReq(handler) {
+function CreateXmlHttpReq(handler,callReqd) 
+{
 	var xmlhttp = null;
 
-	if (window.XMLHttpRequest) {
+	if (window.XMLHttpRequest) 
+	{
 		xmlhttp = new XMLHttpRequest();
-	} else if (window.ActiveXObject) {
+	} 
+	else if (window.ActiveXObject) 
+	{
 		// users with activeX off
-		try {
+		try 
+		{
 			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-		} catch (e) {}
+		} 
+		catch (e) {}
 	}
 
-	if (xmlhttp) xmlhttp.onreadystatechange = handler;
+	if (xmlhttp && callReqd) xmlhttp.onreadystatechange = handler;
 
 	return xmlhttp;
 }
 
 // XMLHttp send GEt request
-function XmlHttpGET(xmlhttp, url) {
-	try {
+function XmlHttpGET(xmlhttp, url) 
+{
+	try 
+	{
 		xmlhttp.open("GET", url, true);	
-
 		xmlhttp.send(null);
-	} catch (e) {}
+	} 
+	catch (e) {}
 }
 
 

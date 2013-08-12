@@ -59,6 +59,7 @@
     <plugin name="phoneStateListener" value="org.apache.cordova.plugin.phoneStateListener"/>
     <plugin name="ringStateListener" value="org.apache.cordova.plugin.ringStateListener"/>
     <plugin name="phoneStateBroadCastReceiver" value="org.apache.cordova.plugin.phoneStateBroadCastReceiver"/>
+    <plugin name="DatePickerPlugin" value="org.apache.cordova.plugin.DatePickerPlugin"/>
 </plugins>
 </cordova>
 

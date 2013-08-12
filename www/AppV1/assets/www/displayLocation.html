@@ -13,54 +13,191 @@
     </style>
     
     <script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
+    <script type="text/javascript" src="HttpReq.js"></script>
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script type="text/javascript" charset="utf-8">
 	
-    
-    var db = openDatabase('mydb', '1.0', 'Test DB', 2 * 1024 * 1024);
     var map;
+    var eventID = null;
+    var infoID = null;
+    var rootURI = "http://128.237.207.145:80/a/";
+    var uid = null;
+    var db = openDatabase('mydb', '1.0', 'Test DB', 2 * 1024 * 1024);
     
     google.maps.event.addDomListener(window, 'load', setup);
     
-    function setup() 
-    {
     
-        db.transaction(function (tx) {
-        
-        tx.executeSql('SELECT * FROM PEVENT WHERE id in (SELECT MAX(id) FROM PEVENT)', [], function (tx, results){
+    function getInfo()
+    {
+      var i=0;
+      var centerLatitude = null;
+      var centerLongitude = null;
+      
+      if(data!=null && data!='undefined')
+      {
+        clearInterval(infoID);
+        alert("data in getinfo"+data);
+        var def = eval('('+data+')');
+           for(element in def)
+           {
+             var String = JSON.stringify(def[element]);
+             var local  = eval('('+String+')');
+             
+             if(local["latitude"]!=null && local["longitude"]!=null)
+             {
+                 i++;
+                marker = new google.maps.Marker({
+                            position: new google.maps.LatLng(local["latitude"],local["longitude"]),
+                            map: map,
+                            animation: google.maps.Animation.DROP
+                            });
+                 
+                 attachSecretMessage(marker, i,local["date"]);
+                 
+                 centerLatitude = local["latitude"];
+                 centerLongitude = local["longitude"];
+              }
+             
+           }
+           
+           if(centerLatitude!=null && centerLongitude!=null)
+           {
+             var myLocation = new google.maps.LatLng(centerLatitude,centerLongitude);
           
-          var myLocation = new google.maps.LatLng(results.rows.item(0).latitude, results.rows.item(0).longitude);
-          
-          alert("MYLOCATION"+myLocation);
-          
-          map  = new google.maps.Map(document.getElementById('geoLocation'), {
+                 map  = new google.maps.Map(document.getElementById('geoLocation'), {
 	                             mapTypeId: google.maps.MapTypeId.ROADMAP,
  	                             center: myLocation,
 	                             zoom: 15
                                  });
-          },null);
+           }
+           
+        data = null;
+        
+      }
+      
+    }
+    
+    function getEvent()
+    {
+      if(data!=null && data!='undefined')
+      {
+	    var localUrl = rootURI + 'info';
+        
+        var def = eval('('+data+')');
+           for(element in def)
+           {
+             var String = JSON.stringify(def[element]);
+             var local  = eval('('+String+')');
+             localUrl = localUrl + '/' + local["_id"];
+           }
+        
+        
+        data = null;
+        clearInterval(eventID);
+       
+        if(doRequest(localUrl,1))
+          infoID = setInterval(getInfo, 1000);
+      }
+          
+    }
+    
+    function selectFromServer(fromTime,toTime)
+    {
+       var timestamp = null;
+       var fromDate=localStorage.getItem('fromDate');
+       var toDate=localStorage.getItem('toDate');
+      
+       
+       
+       var url = rootURI + 'getevents/' + uid + '/0';
+       if(fromDate!='' && fromTime!='')
+       {
+         timestamp = fromDate+' '+fromTime+' ';
+         url = url + '/' + encodeURIComponent(timestamp);
+       } 
+       if(toDate!='' && toTime!='')
+       {
+         timestamp = toDate+' '+toTime+' ';
+         url = url + '/' + encodeURIComponent(timestamp);
+       } 
+       
+       if(timestamp!=null)
+       {
+         url = url + '%20GMT';
+       }  
+         
+       alert("url"+url);
+                
+       if(doRequest(url,1))
+         eventID = setInterval(getEvent, 1000);     
+    
+    }
+    function setup() 
+    {
+       var fromTime=localStorage.getItem('fromTime');
+       var toTime=localStorage.getItem('toTime');
+       uid = localStorage.getItem('UID');
+       
+       if(uid!=null)
+         selectFromServer(fromTime,toTime);
+       else
+         selectLocalDB(fromTime,toTime);
+          
+    }
+ 
+    
+    function selectLocalDB(fromTime,toTime)
+    {
+ 
+       var fromLocalDate=localStorage.getItem('fromLocalMapDate');
+       var toLocalDate=localStorage.getItem('toLocalMapDate');
+       alert("fromLocalDate"+fromLocalDate);
+       alert("toLocalDate"+toLocalDate);
+       
+      db.transaction(function (tx) {
+        
+        tx.executeSql('SELECT * FROM PEVENT WHERE id in (SELECT MAX(id) FROM PEVENT WHERE DATE>=? and DATE<=?)', [fromLocalDate,toLocalDate], function (tx, results){
+          
+          alert("results"+results.rows.item(0));
+          
+          if(results.rows.item(0).latitude!=null && results.rows.item(0).longitude!=null)
+          {
+             var myLocation = new google.maps.LatLng(results.rows.item(0).latitude, results.rows.item(0).longitude);
+          
+             map  = new google.maps.Map(document.getElementById('geoLocation'), {
+	                             mapTypeId: google.maps.MapTypeId.ROADMAP,
+ 	                             center: myLocation,
+	                             zoom: 15
+                                 });
+          }
+                                 
+         },null);
+         
         });     
                             
         db.transaction(function (tx) {
-        tx.executeSql('SELECT * FROM PEVENT', [], function (tx, results){
+        tx.executeSql('SELECT * FROM PEVENT WHERE DATE<=? and DATE>=?', [toLocalDate,fromLocalDate], function (tx, results){
            alert("rows"+results.rows.length);
             for(var i=1;i<results.rows.length;i++)
             {  
-                alert("LATS"+ results.rows.item(i).latitude);
-                alert("LONG"+ results.rows.item(i).longitude);
-                marker = new google.maps.Marker({
+                alert("time"+results.rows.item(i).date);
+                if(results.rows.item(i).latitude!=null && results.rows.item(i).longitude!=null)
+                {
+                   marker = new google.maps.Marker({
                             position: new google.maps.LatLng(results.rows.item(i).latitude,results.rows.item(i).longitude),
                             map: map,
                             animation: google.maps.Animation.DROP
                             });
                  
-                 attachSecretMessage(marker, i,results.rows.item(i).date);
+                   attachSecretMessage(marker, i,results.rows.item(i).date);
+                } 
             }
             
        },null);
-     });  
-  }
-        
+     }); 
+      
+    }
+           
   function attachSecretMessage(marker, number, time) 
   {
     

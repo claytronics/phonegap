@@ -28,9 +28,9 @@
 				//alert('sending app data ' + uri);
 				doRequest(uri);				
 			}
-			type = 1;
+			
 			//alert('Calling InsertDB');
-			InsertDataBase();
+			InsertDataBase(1);
 		}
 	}
 

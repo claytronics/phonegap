@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="jpgraph.js" type="text/javascript" charset="utf-8"></script>
+</head>
+    <div id="AcclerometerGraph"></div>
+	<div id="AppUsageGraph"></div>
+	<title>Usage Pattern Analysis</title>
+    <script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
+	<script type="text/javascript" src="GeoLocationLogger.js"></script>
+	<script type="text/javascript" src="phoneStateListener.js"></script>
+	<script type="text/javascript" src="HttpReq.js"></script>
+	<script type="text/javascript" src="AccelerationLogger.js"></script>
+	<script type="text/javascript" src="AppDataLogger.js"></script>
+    <script type="text/javascript" src="CallLogger.js"></script>
+    <script type="text/javascript" src="canvasjs.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+
+    // The watch id references the current `watchAcceleration`
+    var watchID = null;
+
+    // Wait for Cordova to load
+    //
+    document.addEventListener("deviceready", onDeviceReady, false);
+
+    // Cordova is ready
+    //
+
+	// Globals here below
+	var AcclID = null;
+	var LocnID = null;
+	var AppListID = null;
+	var phoneCallsId =  null;
+	var DBpushID = null;
+	var readyCheckID = null;
+
+	var frequency = 10000;
+	var rootURI = "http://128.237.207.145:80/a/";
+
+	var currLat = null;
+	var currLon = null;
+	var ax = null;
+	var ay = null;
+	var az = null;
+	var aTime = null;
+	var lTime = null;
+	var AppData = null;
+	var db = openDatabase('mydb', '1.0', 'Test DB', 2 * 1024 * 1024);
+	var NoRows;
+	var type;
+    var now;
+
+    function onDeviceReady() {
+		// some init code here
+
+		// some background setIntervals -
+		// For eg: local DB to remote DB push,
+		// clear old data from local DB
+		
+		
+    }
+    
+    
+		function ShowAppUsage_OnMap()
+		{
+			// this is called when user presses a button on the UI
+			// shows the app usage
+		    //window.open('displayLocation.html','Location');
+		    window.location = "displayLocation.html";
+			// default to last 24Hrs if input params invalid
+		}
+
+	function ShowAppUsageGraph()
+	{
+		// get data from local/remote DB and show on graph
+		// get relevant setting from user via UI
+       var uri = rootURI  + 'login/kk';
+       alert(uri);
+       doRequest(uri); 
+		// default to last 24Hrs if input params invalid
+    }
+
+	function ShowAccelerationGraph()
+	{
+		// get data from local/remote DB and show on graph
+		// get relevant setting from user via UI - from-to time
+
+		// default to last 24Hrs if input params invalid
+	}
+
+	</script>
+	<table>
+		 <tr>
+			<td><button type="button" onclick="StartTracking()">Start</button></td>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td><button type="button" onclick="StopTracking()">Stop</button></td>
+		 </tr>
+		 <tr><td>&nbsp;</td></tr>
+		 </table>
+
+		  <table>
+			<tr>
+			  <td>From :</td>
+			  <td> <input type="text" name="FromAcc" value=""></td>
+			</tr>
+			<tr>
+			  <td>To :</td>
+			  <td> <input type="text" name="ToAcc" value=""></td>
+			</tr>
+			<tr>
+			<td></td>
+			<td>
+			   <button name="buttonClick" onclick="ShowAcclerationGraph()">Show Acceleration</button>
+			</td>
+			</tr>
+
+
+
+			<tr>
+			  <td>From :</td>
+			  <td> <input type="text" name="FromUsage" value=""></td>
+			</tr>
+			<tr>
+			  <td>To :</td>
+			  <td> <input type="text" name="ToUsage" value=""></td>
+			</tr>
+			<tr>
+			<td></td>
+			<td>
+			   <button name="buttonClick" onclick="ShowAppUsageGraph()">Show App Usage</button>
+			</td>
+			</tr>
+
+
+
+			<tr>
+			  <td>From :</td>
+			  <td> <input type="text" name="FromTime" value=""></td>
+			</tr>
+			<tr>
+			  <td>To :</td>
+			  <td> <input type="text" name="ToTime" value=""></td>
+			</tr>
+			<tr>
+			<td></td>
+			<td>
+			   <button name="buttonClick" onclick="ShowAppUsage_OnMap()">Show Map</button>
+			</td>
+			</tr>
+
+		 </table>
+	</body>
+</html>

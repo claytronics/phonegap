@@ -29,8 +29,9 @@ public class AppV1 extends DroidGap
     {
         super.onCreate(savedInstanceState);
         // Set by <content src="index.html" /> in config.xml
+        super.setBooleanProperty("keepRunning", true);
         super.loadUrl(Config.getStartUrl());
-        //super.loadUrl("file:///android_asset/www/index.html")
+        //super.loadUrl("file:///android_asset/www/merge.html");
     }
 }
 

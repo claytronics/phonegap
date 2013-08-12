@@ -1,18 +1,15 @@
 	function AccelerationLogger(frequency)
 	{
 		// this func is called once every "interval"
-		
+
 		// 	get current location and put in local DB
 		//alert('get accln');
-		
-		ax = null;
-		ay = null;
-		az = null;
+
 		aTime = null;
 		shake.startWatch(frequency);
-		//alert('done get accln');    	
+		//alert('done get accln');
 	}
-	
+
 	var shake = (function () {
 	var shake = {},
 		watchId = null,
@@ -24,14 +21,14 @@
 		options = { frequency: 300 },
 		previousAcceleration = { x: null, y: null, z: null },
 		shakeCallBack = null;
-	
+
 	// Start watching the accelerometer for a shake gesture
 	shake.startWatch = function (freq) {
-		//alert("startWatch");	
+		//alert("startWatch");
 		shake.frequency = freq/20;
 		watchId = navigator.accelerometer.watchAcceleration(assessCurrentAcceleration, handleError, options);
 	};
-	
+
 	// Stop watching the accelerometer for a shake gesture
 	shake.stopWatch = function () {
 		if (watchId !== null) {
@@ -39,11 +36,11 @@
 			watchId = null;
 		}
 	};
-		
+
 	// Assess the current acceleration parameters to determine a shake
 	function assessCurrentAcceleration(acceleration) {
-	//alert("assessCurrentAcceleration");		
-		
+	//alert("assessCurrentAcceleration");
+
 		var accelerationChange = {x:0, y:0, z:0};
 		if (previousAcceleration.x != null) {
 			accelerationChange.x = Math.abs(previousAcceleration.x- acceleration.x);
@@ -53,13 +50,13 @@
 			if(count < 10)
 			{
 				//alert(count);
-				
+
 				AvgX = AvgX + accelerationChange.x;
 				AvgY = AvgY + accelerationChange.y;
 				AvgZ = AvgZ + accelerationChange.z;
-				
+
 				count++;
-				setTimeout(shake.startWatch, shake.frequency, shakeCallBack);			
+				setTimeout(shake.startWatch, shake.frequency, shakeCallBack);
 			}
 			else
 			{
@@ -72,9 +69,9 @@
 				AvgZ=0;
 				previousAcceleration = { x: null, y: null, z: null }
 				//alert("Acceleration Logger " + ax + " " + ay + " " + az);
-				shake.stopWatch();														
-			}			
-		}	
+				shake.stopWatch();
+			}
+		}
 		else {
 			previousAcceleration = {
 				x: acceleration.x,
@@ -83,10 +80,9 @@
 			}
 		}
 	}
- 
+
 	// Handle errors here
 	function handleError() {
-	}			
+	}
 	return shake;
 	})();
-		

@@ -3,102 +3,64 @@
 <html>
 
 <head>
-  <script src="jpgraph.js" type="text/javascript" charset="utf-8"></script>
+
 </head>
-    <title>Usage Pattern Analysis</title>
-    <script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
-	<script type="text/javascript" src="GeoLocationLogger.js"></script>
-	<script type="text/javascript" src="phoneStateListener.js"></script>
-	<script type="text/javascript" src="HttpReq.js"></script>
-	<script type="text/javascript" src="AccelerationLogger.js"></script>
-	<script type="text/javascript" src="AppDataLogger.js"></script>
-    <script type="text/javascript" src="CallLogger.js"></script>
-    <script type="text/javascript" src="canvasjs.min.js"></script>
-    <script type="text/javascript" charset="utf-8">
 
-    // The watch id references the current `watchAcceleration`
-    var watchID = null;
+        <script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
+	    <script type="text/javascript" charset="utf-8" src="jpgraph.js" ></script>
+	    <script type="text/javascript" src="user.js"></script>
+	    <script type="text/javascript" src="checkDataReady.js"></script>
+		<script type="text/javascript" src="GeoLocationLogger.js"></script>
+		<script type="text/javascript" src="phoneStateListener.js"></script>
+		<script type="text/javascript" src="HttpReq.js"></script>
+		<script type="text/javascript" src="AccelerationLogger.js"></script>
+		<script type="text/javascript" src="AppDataLogger.js"></script>
+        <script type="text/javascript" charset="utf-8" src="datePickerPlugin.js"></script>
+        <script type="text/javascript" src="dateAndTime.js"></script>
+        <script type="text/javascript" src="includes.js"></script>
+        <script type="text/javascript" charset="utf-8">
 
-    // Wait for Cordova to load
-    //
+
     document.addEventListener("deviceready", onDeviceReady, false);
 
-    // Cordova is ready
-    //
 
-	// Globals here below
-	var AcclID = null;
-	var LocnID = null;
-	var AppListID = null;
-	var phoneCallsId =  null;
-	var DBpushID = null;
-	var readyCheckID = null;
-
-	var frequency = 5000;
-	var rootURI = "http://128.237.197.179:80/a/record/5203e92b829fc75508000001/";
-	
-	var currLat = null;
-	var currLon = null;
-	var ax = null;
-	var ay = null;
-	var az = null;
-	var aTime = null;
-	var lTime = null;
-	var AppData = null;
-	var db = openDatabase('mydb', '1.0', 'Test DB', 2 * 1024 * 1024);
-	var NoRows;
-	var type;
-    var now;
-
-    function onDeviceReady() {
+    function onDeviceReady()
+    {
 		// some init code here
 
 		// some background setIntervals -
 		// For eg: local DB to remote DB push,
 		// clear old data from local DB
 		document.addEventListener("pause", onPause, false);
-		
+
     }
-    
-     function onPause()
+
+    function onPause()
     {
        PhoneCallsLogger();
        //alert("AFTER PHONE CALLS");
     }
-    
+
     function PhoneCallsLogger()
 	{
 	   //alert("PHONE CALLS LOGGER");
 		phoneStateListener.start(function (state,number){
           //alert("STATE"+state);
-          //alert("NUMBER"+number);   
+          //alert("NUMBER"+number);
+          type = 2;
+          //checkDataReady();
+          phonenumber = number;
           });
-          
+
        ringStateListener.start(function (state,number){
+        type = 4;
+        //checkDataReady();
           //alert("STATE"+state);
-          //alert("NUMBER"+number);   
+          //alert("NUMBER"+number);
+          phonenumber = number;
           });
 	}
-	
 
-	function dataPushDB()
-	{
-		// check if n/w available and push all new data since previous push
-
-		// some book keeping - to know what has been pushed etc
-	}
-
-	function CreateTables()
-		{
-
-		   db.transaction(function (tx) {
-	         tx.executeSql('CREATE TABLE IF NOT EXISTS PEVENT(id unique, date, latitude, longitude, ax, ay, az, type)');
-	         tx.executeSql('CREATE TABLE IF NOT EXISTS APPS(id unique, name, fg, importance, startTime, endTime, terminated)');
-	         tx.executeSql('CREATE TABLE IF NOT EXISTS CALLS(id unique,phonenumber,ignored,starttime,endtime)');
-	         tx.executeSql('CREATE TABLE IF NOT EXISTS MSGS(id unique,phonenumber,starttime,whenRead)');
-	         tx.executeSql('CREATE TABLE IF NOT EXISTS RINGTONE(id unique,starttime,status)');
-	       });
-	}
 
 	function StartTracking()
 	{
@@ -106,18 +68,17 @@
 		// set repeat intervals for each of the loggers
 		alert('Starting to Track Usage Data');
 		CreateTables();
-		LocnID = setInterval(function(){GeolocationLogger(frequency)}, frequency);
-		AcclID = setInterval(function(){AccelerationLogger(frequency)}, frequency);
-		AppListID = setInterval(function(){AppDataLogger(frequency)}, frequency);
+		getUID();
+
+		  LocnID = setInterval(GeolocationLogger, frequency);
+		  AcclID = setInterval(AccelerationLogger, frequency);
+		  AppListID = setInterval(AppDataLogger, frequency);
 	    //phoneCallsID = setInterval(PhoneCallsLogger, 10000);
-	    
-	    
-		readyCheckID = setInterval(function(){checkDataReady()}, frequency/10);
-		// DBpushID = setInterval(function(){dataPushDB()}, frequency*60); // for now pushing every log to remote server's DB
+
+		 readyCheckID = setInterval(checkData, frequency);
+
 	}
 
-   
-	
     function StopTracking()
 	{
 		// stop the loggers by clearing the intervals for all IDs
@@ -145,189 +106,103 @@
 			clearInterval(DBpushID);*/ // for now pushing every log to remote server's DB
 	}
 
-	function InsertDataBase()
-	{
-
-		  //alert("InsertDataBase " + AppData.join());
-	      var time = getTimeStamp();
-	      
-	      // insert sensor data to PEVENTS table
-	      if((currLat != null) && (currLon != null) && (ax != null) && (ay != null) && (az != null))
-	      {	  
-			  db.transaction(function (tx) {
-		        tx.executeSql('SELECT * FROM PEVENT', [], function (tx, results) {
-		         NoRows = results.rows.length;
-		         if(NoRows =="undefined")
-		         {
-		           NoRows = 0;
-		         }
-		         NoRows = NoRows+1;
-		        // alert("NoRows"+NoRows);
-		         },null);
-		        });
-	          
-		      db.transaction(function (tx) {
-		      		tx.executeSql('INSERT INTO PEVENT(id, date, latitude, longitude, ax, ay, az, type) VALUES (?,?,?,?,?,?,?,?)',[NoRows, time, currLat,currLon,ax,ay,az,type]);
-		         	currLat = null;
-					currLon = null;
-					ax = null;
-					ay = null;
-					az = null;
-					aTime = null;
-					lTime = null;					         	
-		     });
-		}
-		
-		// insert app data to APPS table
-		if(AppData != null)
-		{
-			//alert('App logger success ' + AppData.length);
-			for(var i = 0; i < Math.floor(AppData.length/11) * 11; i=i+11)
-			{
-				db.transaction(function (tx) {
-		        tx.executeSql('SELECT * FROM PEVENT', [], function (tx, results) {
-		         NoRows = results.rows.length;
-		         if(NoRows =="undefined")
-		         {
-		           NoRows = 0;
-		         }
-		         NoRows = NoRows+1;
-		         //alert("NoRows"+NoRows);
-		         },null);
-		        });
-		        
-				db.transaction(function (tx) {
-				//alert("Inserting App Accl Data " + AppData.join());
-	      		tx.executeSql('INSERT INTO PEVENT(id, date, latitude, longitude, ax, ay, az, type) VALUES (?,?,?,?,?,?,?,?)',[NoRows, time, AppData[i+0], AppData[i+1],AppData[i+2],AppData[i+3],AppData[i+4],type]);
-	         	});
-	        }
-	         	
-         	db.transaction(function (tx) {
-	        tx.executeSql('SELECT * FROM APPS', [], function (tx, results) {
-	         NoRows = results.rows.length;
-	         if(NoRows =="undefined")
-	         {
-	           NoRows = 0;
-	         }
-	         NoRows = NoRows+1;
-	         //alert("Apps NoRows"+NoRows);
-	         },null);
-	        });
-	        
-			db.transaction(function (tx) {
-				for(var i = 0; i < Math.floor(AppData.length/11) * 11; i=i+11)
-				{
-					//alert("Inserting App Usage Data " + AppData.join());
-	      		
-					tx.executeSql('INSERT INTO APPS(id, name, fg, importance, startTime, endTime, terminated) VALUES (?,?,?,?,?,?,?)',[NoRows+(i/11),AppData[i+5],AppData[i+6],AppData[i+7],AppData[i+8],AppData[i+9],AppData[i+10]]);
-					//alert('inserted into apps');
-				}
-				//alert("Making AppData = null");	
-				AppData = null;				
-			});		
-						
-		}   
-	}
-
-    function getTimeStamp() 
-   	{
-       var now = new Date();
-       return ((now.getMonth() + 1) + '/' + (now.getDate()) + '/' + now.getFullYear() + " " + now.getHours() + ':'
-                     + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())) + ':' + ((now.getSeconds() < 10) ? ("0" + now
-                     .getSeconds()) : (now.getSeconds())));
+    function checkData()
+    {
+       checkDataReady(0);
     }
-   
-	function checkDataReady()
-	{
-		//alert('checkDataReady');
-		// TBD: do a better way of sync; this is pathetic
-		if((currLat != null) && (currLon != null) && (ax != null) && (ay != null) && (az != null))
-		{
-			// TBD: do some form of checking the timestamps on each param (accln, locn etc)
-			// if they are close enough to curr time then send else (??)may be some kind of avg
-			// if they are close to each other.
-			//alert('checkDataReady uri prep');
-			type = 0;
-			
-				//URL/a/record/  type/         time/                                   lat/                       long/                 x/                    y/                  z/
-			var uri = rootURI + '0/' + encodeURIComponent(getTimeStamp()) + '/' + currLat.toString() + '/' + currLon.toString() + '/' + ax.toString() + '/' + ay.toString() + '/' + az.toString();
 
-			//alert(uri);
-			doRequest(uri);
-
-			InsertDataBase(); 			          
-		}
-	}
-
-	   
 	function SMSLogger()
 	{
 		// this uses broadcast receiver notification on ringer settings changed
 	}
 
-	function ShowAppUsage_OnMap(from, to)
+	function ShowAppUsage_OnMap()
 	{
-		// this is called when user presses a button on the UI
-		// shows the app usage
+	    var fromDate = document.getElementById("FromDateMap").value;
+	    var fromTime = document.getElementById("FromTimeMap").value;
+	    var toDate = document.getElementById("ToDateMap").value;
+	    var toTime = document.getElementById("ToTimeMap").value;
+
+	    if(fromTime!='' && fromDate=='')
+	    {
+	      alert("Date must be entered with Time");
+	      document.getElementById("FromDateMap").focus();
+	    }
+	    if(toTime!='' && toDate=='')
+	    {
+	      alert("Date must be entered with Time");
+	      document.getElementById("ToDateMap").focus();
+	    }
+
+	    localStorage.setItem('fromDate',fromDate);
+	    localStorage.setItem('fromTime',fromTime);
+	    localStorage.setItem('toDate',toDate);
+	    localStorage.setItem('toTime',toTime);
+
+	    localStorage.setItem('UID',uid);
+
 	    window.location = "displayLocation.html";
-		// default to last 24Hrs if input params invalid
 	}
 
-	function ShowAppUsageGraph(from, to){
-		// get data from local/remote DB and show on graph
-		// get relevant setting from user via UI
-		//alert('usage graph');
-		window.location = "AppUsageGraph.html";
-		// default to last 24Hrs if input params invalid
+	function ShowAppUsageGraph()
+	{
+      window.location = "AppUsageGraph.html";
     }
 
-	function ShowAccelerationGraph(from, to){
-		// get data from local/remote DB and show on graph
-		// get relevant setting from user via UI - from-to time
-		//alert('accl graph html');
-		window.location = "AccelerationGraph.html";
-		// default to last 24Hrs if input params invalid
+	function ShowAccelerationGraph()
+	{
+	  window.location = "AccelerationGraph.html";
 	}
 
+
 	</script>
+	<body>
 	<table>
 		 <tr>
-			<td><button type="button" onclick="StartTracking()">Start</button></td>
-			<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+		    <td><button type="button" onclick="StartTracking()">Start</button></td>
+
 			<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 			<td><button type="button" onclick="StopTracking()">Stop</button></td>
 		 </tr>
 		 <tr><td>&nbsp;</td></tr>
-		 </table>
+    </table>
 
 		  <table>
 			<tr>
-			  <td>From :</td>
-			  <td> <input type="text" name="FromAcc" value=""></td>
+			  <td>From:</td>
+			  <td> <input type="text" id="FromDateAcc" class="nativedatepicker" onfocus="getDate(this)"></td>
+			  <td> <input type="text" id="FromTimeAcc" class="nativetimepicker" onfocus="getTime(this)"></td>
 			</tr>
 			<tr>
-			  <td>To :</td>
-			  <td> <input type="text" name="ToAcc" value=""></td>
+			  <td>To:</td>
+			  <td> <input type="text" id="ToDateAcc" class="nativedatepicker" onfocus="getDate(this)"></td>
+			  <td> <input type="text" id="ToTimeAcc" class="nativetimepicker" onfocus="getTime(this)"></td>
 			</tr>
 			<tr>
-			<td></td>
 			<td>
-			   <button name="buttonClick" onclick="ShowAccelerationGraph()">Show Acceleration</button>
+			  &nbsp;
+			</td>
+			<td>
+			   <input type="button" onclick="ShowAccelerationGraph()" value="Show Acceleration" />
 			</td>
 			</tr>
 
 
 
 			<tr>
-			  <td>From :</td>
-			  <td> <input type="text" name="FromUsage" value=""></td>
+			  <td>From:</td>
+			  <td> <input type="text" name="FromDateApp" class="nativedatepicker" onfocus="getDate(this)"></td>
+			  <td> <input type="text" name="FromTimeApp" class="nativetimepicker" onfocus="getTime(this)"></td>
 			</tr>
 			<tr>
-			  <td>To :</td>
-			  <td> <input type="text" name="ToUsage" value=""></td>
+			  <td>To:</td>
+			  <td> <input type="text" name="ToDateApp" class="nativedatepicker" onfocus="getDate(this)"></td>
+			  <td> <input type="text" name="ToTimeApp" class="nativetimepicker" onfocus="getTime(this)"></td>
 			</tr>
 			<tr>
-			<td></td>
+			<td>
+			  &nbsp;
+			</td>
 			<td>
 			   <button name="buttonClick" onclick="ShowAppUsageGraph()">Show App Usage</button>
 			</td>
@@ -336,15 +211,17 @@
 
 
 			<tr>
-			  <td>From :</td>
-			  <td> <input type="text" name="FromTime" value=""></td>
+			  <td>From:</td>
+			  <td> <input type="text" id="FromDateMap" class="nativedatepicker" onfocus="getDate(this)"></td>
+			  <td> <input type="text" id="FromTimeMap" class="nativetimepicker" onfocus="getTime(this)"></td>
 			</tr>
 			<tr>
-			  <td>To :</td>
-			  <td> <input type="text" name="ToTime" value=""></td>
+			  <td>To:</td>
+			  <td> <input type="text" id="ToDateMap" class="nativedatepicker" onfocus="getDate(this)"></td>
+			  <td> <input type="text" id="ToTimeMap" class="nativetimepicker" onfocus="getTime(this)"></td>
 			</tr>
 			<tr>
-			<td></td>
+			<td>&nbsp;</td>
 			<td>
 			   <button name="buttonClick" onclick="ShowAppUsage_OnMap()">Show Map</button>
 			</td>
