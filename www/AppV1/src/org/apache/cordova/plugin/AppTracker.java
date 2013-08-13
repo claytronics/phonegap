@@ -118,6 +118,7 @@ public class AppTracker extends CordovaPlugin implements SensorEventListener{
 
 						value.Name = info.processName;
 						value.Start = getTimeStamp();
+						Log.w(TAG, "Start time " + value.Start);
 						value.isFG = (info.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND);
 						value.isTerminated = false;
 						value.importance = info.importance;
@@ -156,6 +157,7 @@ public class AppTracker extends CordovaPlugin implements SensorEventListener{
 							appData value = new appData();
 							value.Name = info.processName;
 							value.Start = getTimeStamp();
+							Log.w(TAG, "Start time " + value.Start);
 							value.isFG = (info.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND);
 							value.isTerminated = false;
 							value.importance = info.importance;
@@ -174,34 +176,36 @@ public class AppTracker extends CordovaPlugin implements SensorEventListener{
 									Double lat = location.getLatitude();
 									Double lon = location.getLongitude();
 									if(AppDataList == null)
-										AppDataList = lat.toString() + '/' + lon.toString() + '/';
+										AppDataList = lat.toString() + '|' + lon.toString() + '|';
 									else
-										AppDataList += lat.toString() + '/' + lon.toString() + '/';
+										AppDataList += lat.toString() + '|' + lon.toString() + '|';
 								}
 								else
 								{
 									if(AppDataList == null)
-										AppDataList = "101.2/101.2/";
+										AppDataList = "101.2|101.2|";
 									else
-										AppDataList += "101.2/101.2/";
+										AppDataList += "101.2|101.2|";
 								}
 								Log.w(TAG, "6.1");
 							    if(x!=null)
-							    	AppDataList += x.toString() + '/' + y.toString() + '/' + z.toString() + '/';
+							    	AppDataList += x.toString() + '|' + y.toString() + '|' + z.toString() + '|';
 							    else
-							    	AppDataList += "null/null/null/";
+							    	AppDataList += "0|0|0|";
 
 							    Log.w(TAG, "6.2");
 							    AllAppsData.get(info.processName).End = getTimeStamp();
+							    Log.w(TAG, "End time " + AllAppsData.get(info.processName).End);
 								AllAppsData.get(info.processName).isTerminated = false;
-								AppDataList += (AllAppsData.get(info.processName).Name + '/' + AllAppsData.get(info.processName).isFG.toString() + '/' +
-								AllAppsData.get(info.processName).importance.toString() + '/' +  (AllAppsData.get(info.processName).Start) + '/' +
-								AllAppsData.get(info.processName).End + '/' + AllAppsData.get(info.processName).isTerminated.toString()) + '/';
+								AppDataList += (AllAppsData.get(info.processName).Name + '|' + AllAppsData.get(info.processName).isFG.toString() + '|' +
+								AllAppsData.get(info.processName).importance.toString() + '|' +  (AllAppsData.get(info.processName).Start) + '|' +
+								AllAppsData.get(info.processName).End + '|' + AllAppsData.get(info.processName).isTerminated.toString()) + '|';
 								Log.w(TAG, "6.3");
 								// update the importance and start times; this is a new entry
 								AllAppsData.get(info.processName).isFG = (info.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND);
 								AllAppsData.get(info.processName).importance = info.importance;
 								AllAppsData.get(info.processName).Start = getTimeStamp();
+								Log.w(TAG, "Start time " + AllAppsData.get(info.processName).Start);
 								AllAppsData.get(info.processName).End = null;
 								Log.w(TAG, "6.4");
 							}
@@ -240,30 +244,31 @@ public class AppTracker extends CordovaPlugin implements SensorEventListener{
 							Double lat = location.getLatitude();
 							Double lon = location.getLongitude();
 							if(AppDataList == null)
-								AppDataList = lat.toString() + '/' + lon.toString() + '/';
+								AppDataList = lat.toString() + '|' + lon.toString() + '|';
 							else
-								AppDataList += lat.toString() + '/' + lon.toString() + '/';
+								AppDataList += lat.toString() + '|' + lon.toString() + '|';
 						}
 						else
 						{
 							if(AppDataList == null)
-								AppDataList = "101.2/101.2/";
+								AppDataList = "101.2|101.2|";
 							else
-								AppDataList += "101.2/101.2/";
+								AppDataList += "101.2|101.2|";
 						}
 
 						Log.w(TAG, "8.1");
 					    if(x!=null)
-					    	AppDataList += x.toString() + '/' + y.toString() + '/' + z.toString() + '/';
+					    	AppDataList += x.toString() + '|' + y.toString() + '|' + z.toString() + '|';
 					    else
-					    	AppDataList += "null/null/null/";
+					    	AppDataList += "0|0|0|";
 
 					    Log.w(TAG, "8.2");
 						AllAppsData.get(AppName).End = getTimeStamp();
+						Log.w(TAG, "End time " + AllAppsData.get(AppName).End);
 						AllAppsData.get(AppName).isTerminated = true;
-						AppDataList += (AllAppsData.get(AppName).Name + '/' + AllAppsData.get(AppName).isFG.toString() + '/' +
-						AllAppsData.get(AppName).importance.toString() + '/' +  AllAppsData.get(AppName).Start + '/' +
-						AllAppsData.get(AppName).End + '/' + AllAppsData.get(AppName).isTerminated.toString()) + '/';
+						AppDataList += (AllAppsData.get(AppName).Name + '|' + AllAppsData.get(AppName).isFG.toString() + '|' +
+						AllAppsData.get(AppName).importance.toString() + '|' +  AllAppsData.get(AppName).Start + '|' +
+						AllAppsData.get(AppName).End + '|' + AllAppsData.get(AppName).isTerminated.toString()) + '|';
 						Log.w(TAG, "8.3");
 						// remove the obj from the list
 						AllAppsData.remove(AppName);
@@ -273,7 +278,7 @@ public class AppTracker extends CordovaPlugin implements SensorEventListener{
 				}
 
 			}
-			Log.w(TAG, "9.0");
+			Log.w(TAG, " " + AppDataList);
 			callbackContext.success(AppDataList);
 		}
 		return true;
@@ -296,7 +301,11 @@ public class AppTracker extends CordovaPlugin implements SensorEventListener{
    public String getTimeStamp()
    {
 		Calendar cal = Calendar.getInstance();
-       return ((cal.get(Calendar.MONTH) + 1) + '/' + (cal.get(Calendar.DAY_OF_MONTH)) + '/' + cal.get(Calendar.YEAR) + " " + cal.get(Calendar.HOUR_OF_DAY) + ':'
+		Integer Month = cal.get(Calendar.MONTH) + 1;
+		Integer Day = cal.get(Calendar.DAY_OF_MONTH);
+		Integer Year = cal.get(Calendar.YEAR);
+		
+       return (Month.toString() + '/' + Day.toString()+ '/' + Year.toString() + " " + cal.get(Calendar.HOUR_OF_DAY) + ':'
                      + ((cal.get(Calendar.MINUTE) < 10) ? ("0" + cal.get(Calendar.MINUTE)) : (cal.get(Calendar.MINUTE))) + ':' + ((cal.get(Calendar.SECOND) < 10) ? ("0" + cal.get(Calendar.SECOND)) : (cal.get(Calendar.SECOND))));
     }
-	}
+}

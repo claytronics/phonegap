@@ -19,7 +19,7 @@ var data = null;
 
 	function getUID()
 	{
-	   var uri = rootURI + 'login/kk';
+	   var uri = rootURI + 'login/spurthi';
 	   //alert("URI"+uri);
 
 	   if(doRequest(uri,1))

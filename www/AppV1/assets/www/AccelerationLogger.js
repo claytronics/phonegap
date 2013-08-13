@@ -4,8 +4,6 @@
 
 		// 	get current location and put in local DB
 		//alert('get accln');
-
-		aTime = null;
 		shake.startWatch(frequency);
 		//alert('done get accln');
 	}

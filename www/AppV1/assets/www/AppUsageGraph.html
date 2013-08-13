@@ -34,9 +34,16 @@
     {
     	// get the info from local DB
     	//alert('DB retrieve');
+		var fromLocalDate=localStorage.getItem('fromLocalAppDate');
+		var toLocalDate=localStorage.getItem('toLocalAppDate');
+		var fromTime=localStorage.getItem('fromTimeApp');
+		var toTime=localStorage.getItem('toTimeApp');
+       
+		alert("App LocalDate " + fromLocalDate + ' ' + toLocalDate);
+		
 		db.transaction(function (tx) {
-        tx.executeSql('SELECT * FROM APPS', [], function (tx, results){
-            //alert("rows"+results.rows.length);
+        tx.executeSql('SELECT * FROM APPS WHERE startTime>=? and startTime<=?', [fromLocalDate + ' ' + fromTime,toLocalDate + ' ' + toTime], function (tx, results){
+            alert("rows"+results.rows.length);
             for(var i=1;i<results.rows.length;i++)
             {  
             	var found = 0;

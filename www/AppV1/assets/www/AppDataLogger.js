@@ -16,7 +16,7 @@
 		//alert('applogger successCB');
 		if(AppEvent != null)
 		{
-			AppData = AppEvent.split('/');
+			AppData = AppEvent.split('|');
 			//alert('App logger success ' + AppData.length);
 			for(var i = 0; i < Math.floor(AppData.length/11) * 11; i=i+11)
 			{

@@ -1,10 +1,10 @@
 function CreateTables()
 {
 		   db.transaction(function (tx) {
-	         tx.executeSql('CREATE TABLE IF NOT EXISTS PEVENT(id unique, date, latitude, longitude, ax, ay, az, type)');
-	         tx.executeSql('CREATE TABLE IF NOT EXISTS APPS(id unique, name, fg, importance, startTime, endTime, terminated)');
-	         tx.executeSql('CREATE TABLE IF NOT EXISTS CALLS(id unique,phonenumber,ignored,starttime,endtime)');
-	         tx.executeSql('CREATE TABLE IF NOT EXISTS MSGS(id unique,phonenumber,starttime,whenRead)');
+	         tx.executeSql('CREATE TABLE IF NOT EXISTS PEVENT(id unique, date DATETIME, latitude, longitude, ax, ay, az, type)');
+	         tx.executeSql('CREATE TABLE IF NOT EXISTS APPS(id unique, name, fg, importance, startTime DATETIME, endTime DATETIME, terminated)');
+	         tx.executeSql('CREATE TABLE IF NOT EXISTS CALLS(id unique,phonenumber,ignored,starttime DATETIME,endtime DATETIME)');
+	         tx.executeSql('CREATE TABLE IF NOT EXISTS MSGS(id unique,phonenumber,starttime DATETIME,whenRead)');
 	         tx.executeSql('CREATE TABLE IF NOT EXISTS RINGTONE(id unique,status)');
 	       });
 }
@@ -119,7 +119,9 @@ function InsertPeventData(type,time)
 {
    var NoRows = null;
 
-   db.transaction(function (tx) {
+   if((currLat!=null) && (currLon!=null) && (ax != null) && (ay != null) && (az != null))
+   {
+		db.transaction(function (tx) {
 	        tx.executeSql('SELECT * FROM PEVENT', [], function (tx, results) {
 	         NoRows = results.rows.length;
 
@@ -151,6 +153,7 @@ function InsertPeventData(type,time)
 	            aTime = null;
 				lTime = null;
 	     });
+	}	 
 }
 
 function InsertDataBase(type)

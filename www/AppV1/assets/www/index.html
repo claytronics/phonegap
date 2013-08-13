@@ -146,12 +146,58 @@
 
 	function ShowAppUsageGraph()
 	{
-      window.location = "AppUsageGraph.html";
+		var fromDate = document.getElementById("FromDateApp").value;
+	    var fromTime = document.getElementById("FromTimeApp").value;
+	    var toDate = document.getElementById("ToDateApp").value;
+	    var toTime = document.getElementById("ToTimeApp").value;
+
+	    if(fromTime!='' && fromDate=='')
+	    {
+	      alert("Date must be entered with Time");
+	      document.getElementById("FromDateApp").focus();
+	    }
+	    if(toTime!='' && toDate=='')
+	    {
+	      alert("Date must be entered with Time");
+	      document.getElementById("ToDateApp").focus();
+	    }
+
+	    localStorage.setItem('fromDate',fromDate);
+	    localStorage.setItem('fromTimeApp',fromTime);
+	    localStorage.setItem('toDate',toDate);
+	    localStorage.setItem('toTimeApp',toTime);
+
+	    localStorage.setItem('UID',uid);
+
+	    window.location = "AppUsageGraph.html";
     }
 
 	function ShowAccelerationGraph()
 	{
-	  window.location = "AccelerationGraph.html";
+	  		var fromDate = document.getElementById("FromDateAcc").value;
+	    var fromTime = document.getElementById("FromTimeAcc").value;
+	    var toDate = document.getElementById("ToDateAcc").value;
+	    var toTime = document.getElementById("ToTimeAcc").value;
+
+	    if(fromTime!='' && fromDate=='')
+	    {
+	      alert("Date must be entered with Time");
+	      document.getElementById("FromDateAcc").focus();
+	    }
+	    if(toTime!='' && toDate=='')
+	    {
+	      alert("Date must be entered with Time");
+	      document.getElementById("ToDateAcc").focus();
+	    }
+
+	    localStorage.setItem('fromDate',fromDate);
+	    localStorage.setItem('fromTimeAccl',fromTime);
+	    localStorage.setItem('toDate',toDate);
+	    localStorage.setItem('toTimeAccl',toTime);
+
+	    localStorage.setItem('UID',uid);
+
+	    window.location = "AccelerationGraph.html";
 	}
 
 
@@ -191,13 +237,13 @@
 
 			<tr>
 			  <td>From:</td>
-			  <td> <input type="text" name="FromDateApp" class="nativedatepicker" onfocus="getDate(this)"></td>
-			  <td> <input type="text" name="FromTimeApp" class="nativetimepicker" onfocus="getTime(this)"></td>
+			  <td> <input type="text" id="FromDateApp" class="nativedatepicker" onfocus="getDate(this)"></td>
+			  <td> <input type="text" id="FromTimeApp" class="nativetimepicker" onfocus="getTime(this)"></td>
 			</tr>
 			<tr>
 			  <td>To:</td>
-			  <td> <input type="text" name="ToDateApp" class="nativedatepicker" onfocus="getDate(this)"></td>
-			  <td> <input type="text" name="ToTimeApp" class="nativetimepicker" onfocus="getTime(this)"></td>
+			  <td> <input type="text" id="ToDateApp" class="nativedatepicker" onfocus="getDate(this)"></td>
+			  <td> <input type="text" id="ToTimeApp" class="nativetimepicker" onfocus="getTime(this)"></td>
 			</tr>
 			<tr>
 			<td>

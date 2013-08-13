@@ -34,9 +34,15 @@
     {
     	// get the info from local DB
     	//alert('DB retrieve');
+		var fromLocalDate=localStorage.getItem('fromLocalAccDate');
+		var toLocalDate=localStorage.getItem('toLocalAccDate');
+		var fromTime=localStorage.getItem('fromTimeAccl');
+		var toTime=localStorage.getItem('toTimeAccl');
+        alert("Accln LocalDateTime " + fromLocalDate + ' ' + fromTime + ' ' + toLocalDate + ' ' + toTime);
+		
 		db.transaction(function (tx) {
-        tx.executeSql('SELECT * FROM PEVENT', [], function (tx, results){
-           //alert("rows"+results.rows.length);
+        tx.executeSql('SELECT * FROM PEVENT WHERE date>=? and date<=?', [fromLocalDate + ' ' + fromTime, toLocalDate + ' ' + toTime], function (tx, results){
+           alert("rows"+results.rows.length);
             for(var i=1;i<results.rows.length;i++)
             {  
                 //alert("Accl. "+ results.rows.item(i).ax + results.rows.item(i).ay + results.rows.item(i).az);

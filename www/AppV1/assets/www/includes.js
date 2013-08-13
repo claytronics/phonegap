@@ -10,7 +10,7 @@
 	var intervalID = null;
 
 	var frequency = 5000;
-	var rootURI = "http://128.237.207.145:80/a/";
+	var rootURI = "http://128.237.197.179:80/a/";
 
 	var currLat = null;
 	var currLon = null;
