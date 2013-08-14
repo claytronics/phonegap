@@ -37,27 +37,27 @@
 		alert('Starting to Track Usage Data');
 		start = 1;
 		CreateTables();
-		
+
 		if(userName == null || userName =='')
 		{
 		  if(document.getElementById("User").value=="")
 		  {
 		    alert("Enter User Name");
-		    return;  
+		    return;
 		  }
 		  else
 		  {
-		    userName = document.getElementById("User").value; 
-		    document.getElementById("User").readOnly = true;   
+		    userName = document.getElementById("User").value;
+		    document.getElementById("User").readOnly = true;
 		  }
-		  
-		  createUID(); 
-		} 
-		
+
+		  createUID();
+		}
+
 		if(uid==null)
 		{
 		  getUID();
-		}  
+		}
 
 		  LocnID = setInterval(GeolocationLogger, frequency);
 		  AcclID = setInterval(AccelerationLogger, frequency);
@@ -65,7 +65,7 @@
 	    //phoneCallsID = setInterval(PhoneCallsLogger, 10000);
           document.addEventListener("pause", onPause, false);
 		  readyCheckID = setInterval(checkData, frequency);
-		 
+
 	}
 
     function StopTracking()
@@ -73,9 +73,9 @@
 		// stop the loggers by clearing the intervals for all IDs
 		alert('Stopping Tracking Usage Data');
         start = 0;
-        
+
         Modify();
-        
+
 		if(LocnID != null)
 			clearInterval(LocnID);
 		if(AcclID != null)
@@ -191,12 +191,12 @@
 
 	    window.location = "AccelerationGraph.html";
 	}
-    
+
     function onload()
     {
        Modify();
     }
-    
+
     function Modify()
     {
        document.getElementById("FromDateAcc").value="";
@@ -215,7 +215,7 @@
 
 	</script>
   </head>
-  
+
 	<body onload="onload()">
 	<table>
 		 <tr>
@@ -254,13 +254,13 @@
 
 			<tr>
 			  <td>From</td>
-			  <td> <input type="text" name="FromDateApp" class="nativedatepicker" onfocus="getDate(this)"></td>
-			  <td> <input type="text" name="FromTimeApp" class="nativetimepicker" onfocus="getTime(this)"></td>
+			  <td> <input type="text" id="FromDateApp" class="nativedatepicker" onfocus="getDate(this)"></td>
+			  <td> <input type="text" id="FromTimeApp" class="nativetimepicker" onfocus="getTime(this)"></td>
 			</tr>
 			<tr>
 			  <td>To</td>
-			  <td> <input type="text" name="ToDateApp" class="nativedatepicker" onfocus="getDate(this)"></td>
-			  <td> <input type="text" name="ToTimeApp" class="nativetimepicker" onfocus="getTime(this)"></td>
+			  <td> <input type="text" id="ToDateApp" class="nativedatepicker" onfocus="getDate(this)"></td>
+			  <td> <input type="text" id="ToTimeApp" class="nativetimepicker" onfocus="getTime(this)"></td>
 			</tr>
 			<tr>
 			<td>
