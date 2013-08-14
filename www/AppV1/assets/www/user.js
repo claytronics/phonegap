@@ -28,6 +28,6 @@ var data = null;
  
 	   if(doRequest(uri,1))
 	   {
-	      intervalID = setInterval(refresh, 1000);
+	      intervalID = setInterval(function(){refresh(1000)}, 1000);
 	   }
 	}

@@ -39,10 +39,21 @@
 		var fromTime=localStorage.getItem('fromTimeApp');
 		var toTime=localStorage.getItem('toTimeApp');
        
-		alert("App LocalDate " + fromLocalDate + ' ' + toLocalDate);
+        if(fromLocalDate!=null && fromLocalDate!='')
+		   fromLocalDateTime = fromLocalDate+' '+fromTime;
+		else
+		   fromLocalDateTime='';
+		   
+		
+		if(toLocalDate!=null && toLocalDate!='')
+		   toLocalDateTime= toLocalDate+' '+toTime;
+		else
+		   toLocalDateTime='';
+        
+		//alert("App LocalDate " + fromLocalDate + ' ' + toLocalDate);
 		
 		db.transaction(function (tx) {
-        tx.executeSql('SELECT * FROM APPS WHERE startTime>=? and startTime<=?', [fromLocalDate + ' ' + fromTime,toLocalDate + ' ' + toTime], function (tx, results){
+        tx.executeSql('SELECT * FROM APPS WHERE startTime>=? and startTime<=?', [fromLocalDateTime,toLocalDateTime], function (tx, results){
             alert("rows"+results.rows.length);
             for(var i=1;i<results.rows.length;i++)
             {  

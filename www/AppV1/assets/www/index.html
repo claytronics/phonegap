@@ -37,35 +37,35 @@
 		alert('Starting to Track Usage Data');
 		start = 1;
 		CreateTables();
-
+		
 		if(userName == null || userName =='')
 		{
 		  if(document.getElementById("User").value=="")
 		  {
 		    alert("Enter User Name");
-		    return;
+		    return;  
 		  }
 		  else
 		  {
-		    userName = document.getElementById("User").value;
-		    document.getElementById("User").readOnly = true;
+		    userName = document.getElementById("User").value; 
+		    document.getElementById("User").readOnly = true;   
 		  }
-
-		  createUID();
-		}
-
+		  
+		  createUID(); 
+		} 
+		
 		if(uid==null)
 		{
 		  getUID();
-		}
+		}  
 
-		  LocnID = setInterval(GeolocationLogger, frequency);
-		  AcclID = setInterval(AccelerationLogger, frequency);
-		  AppListID = setInterval(AppDataLogger, frequency);
+		  LocnID = setInterval(function(){GeolocationLogger(frequency)}, frequency);
+		  AcclID = setInterval(function(){AccelerationLogger(frequency)}, frequency);
+		  AppListID = setInterval(function(){AppDataLogger(frequency)}, frequency);
 	    //phoneCallsID = setInterval(PhoneCallsLogger, 10000);
           document.addEventListener("pause", onPause, false);
-		  readyCheckID = setInterval(checkData, frequency);
-
+		  readyCheckID = setInterval(function(){checkData(frequency)}, frequency);
+		 
 	}
 
     function StopTracking()
@@ -73,9 +73,9 @@
 		// stop the loggers by clearing the intervals for all IDs
 		alert('Stopping Tracking Usage Data');
         start = 0;
-
+        
         Modify();
-
+        
 		if(LocnID != null)
 			clearInterval(LocnID);
 		if(AcclID != null)
@@ -115,6 +115,11 @@
 	    var toDate = document.getElementById("ToDateMap").value;
 	    var toTime = document.getElementById("ToTimeMap").value;
 
+        if((fromDate!=null && fromDate!='') && (fromTime==null))
+          fromTime = '00:00:00';
+        if((toDate!=null && toDate!='') && (toTime==null))
+          toTime = '00:00:00';
+       
 	    if(fromTime!='' && fromDate=='')
 	    {
 	      alert("Date must be entered with Time");
@@ -143,6 +148,11 @@
 	    var toDate = document.getElementById("ToDateApp").value;
 	    var toTime = document.getElementById("ToTimeApp").value;
 
+        if((fromDate!=null && fromDate!='') && (fromTime==null))
+          fromTime = '00:00:00';
+        if((toDate!=null && toDate!='') && (toTime==null))
+          toTime = '00:00:00';
+       
 	    if(fromTime!='' && fromDate=='')
 	    {
 	      alert("Date must be entered with Time");
@@ -171,6 +181,11 @@
 	    var toDate = document.getElementById("ToDateAcc").value;
 	    var toTime = document.getElementById("ToTimeAcc").value;
 
+        if((fromDate!=null && fromDate!='') && (fromTime==''))
+          fromTime = '00:00:00';
+        if((toDate!=null && toDate!='') && (toTime==''))
+          toTime = '00:00:00';
+       
 	    if(fromTime!='' && fromDate=='')
 	    {
 	      alert("Date must be entered with Time");
@@ -191,12 +206,12 @@
 
 	    window.location = "AccelerationGraph.html";
 	}
-
+    
     function onload()
     {
        Modify();
     }
-
+    
     function Modify()
     {
        document.getElementById("FromDateAcc").value="";
@@ -215,7 +230,7 @@
 
 	</script>
   </head>
-
+  
 	<body onload="onload()">
 	<table>
 		 <tr>
