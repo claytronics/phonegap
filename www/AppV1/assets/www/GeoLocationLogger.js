@@ -19,5 +19,5 @@
 
 	function onErrorLocn()
 	{
-		alert("Could not get location!");
+		//alert("Could not get location!");
 	}

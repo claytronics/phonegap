@@ -33,6 +33,7 @@ public class phoneStateListener extends CordovaPlugin {
 		this.context = cordova.getActivity().getApplicationContext();
 
 		System.out.println("In phone State Listener");
+		
 		if ("start".equals(action)) {
 			this.callbackContext = callbackContext;
 			startPhoneListener();
@@ -66,7 +67,6 @@ public class phoneStateListener extends CordovaPlugin {
 					System.out.println("on Receive");
 					if (intent != null)
 					{	
-					  String mode = null;
 					  String state = null;
 					  String number = null;
 					  
@@ -74,7 +74,6 @@ public class phoneStateListener extends CordovaPlugin {
 					  if(intent.getAction().equals(TelephonyManager.ACTION_PHONE_STATE_CHANGED))
    					  {
 						  System.out.println("ACTION PHONE STATE CHANGED");
-						  mode = "CALL";
 						 
 						  state = intent.hasExtra(TelephonyManager.EXTRA_STATE) ? intent.getStringExtra(TelephonyManager.EXTRA_STATE) : NONE;
  						 
@@ -85,12 +84,6 @@ public class phoneStateListener extends CordovaPlugin {
 							}
 					  }
 					  	
-					  if(intent.getAction().equals(android.media.AudioManager.RINGER_MODE_CHANGED_ACTION))
-					  {  
-						  mode = "RINGER";
-						  state = "RINGER STATUS CHANGED";
-					  }	  
-					  		
 					 		final JSONObject data = new JSONObject();
 							try
 							  {

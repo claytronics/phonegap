@@ -20,7 +20,7 @@
     var map;
     var eventID = null;
     var infoID = null;
-    var rootURI = "http://128.237.197.179:80/a/";
+    var rootURI = "http://128.237.207.145:80/a/";
     var uid = null;
     var db = openDatabase('mydb', '1.0', 'Test DB', 2 * 1024 * 1024);
     
@@ -36,7 +36,7 @@
       if(data!=null && data!='undefined')
       {
         clearInterval(infoID);
-        alert("data in getinfo"+data);
+        //alert("data in getinfo"+data);
         var def = eval('('+data+')');
            for(element in def)
            {
@@ -107,8 +107,6 @@
        var fromDate=localStorage.getItem('fromDate');
        var toDate=localStorage.getItem('toDate');
       
-       
-       
        var url = rootURI + 'getevents/' + uid + '/0';
        if(fromDate!='' && fromTime!='')
        {
@@ -126,21 +124,22 @@
          url = url + '%20GMT';
        }  
          
-       alert("url"+url);
+       //alert("url"+url);
                 
        if(doRequest(url,1))
          eventID = setInterval(getEvent, 1000);     
     
     }
+    
     function setup() 
     {
        var fromTime=localStorage.getItem('fromTime');
        var toTime=localStorage.getItem('toTime');
        uid = localStorage.getItem('UID');
        
-       if(uid!=null)
+       /*if(uid!=null)
          selectFromServer(fromTime,toTime);
-       else
+       else*/
          selectLocalDB(fromTime,toTime);
           
     }
@@ -151,14 +150,14 @@
  
        var fromLocalDate=localStorage.getItem('fromLocalMapDate');
        var toLocalDate=localStorage.getItem('toLocalMapDate');
-       alert("fromLocalDate"+fromLocalDate);
-       alert("toLocalDate"+toLocalDate);
+       //alert("fromLocalDate"+fromLocalDate);
+       //alert("toLocalDate"+toLocalDate);
        
       db.transaction(function (tx) {
         
-        tx.executeSql('SELECT * FROM PEVENT WHERE id in (SELECT MAX(id) FROM PEVENT WHERE DATE>=? and DATE<=?)', [fromLocalDate,toLocalDate], function (tx, results){
+        tx.executeSql('SELECT * FROM PEVENT WHERE id in (SELECT MAX(id) FROM PEVENT WHERE DATE>=? and DATE<=?)', [fromLocalDate + ' ' + fromTime,toLocalDate + ' ' + toTime], function (tx, results){
           
-          alert("results"+results.rows.item(0));
+          //alert("results"+results.rows.item(0));
           
           if(results.rows.item(0).latitude!=null && results.rows.item(0).longitude!=null)
           {
@@ -176,11 +175,12 @@
         });     
                             
         db.transaction(function (tx) {
-        tx.executeSql('SELECT * FROM PEVENT WHERE DATE<=? and DATE>=?', [toLocalDate,fromLocalDate], function (tx, results){
-           alert("rows"+results.rows.length);
+          tx.executeSql('SELECT * FROM PEVENT WHERE DATE<=? and DATE>=?', [toLocalDate,fromLocalDate], function (tx, results){
+          
+           //alert("rows"+results.rows.length);
             for(var i=1;i<results.rows.length;i++)
             {  
-                alert("time"+results.rows.item(i).date);
+                //alert("time"+results.rows.item(i).date);
                 if(results.rows.item(i).latitude!=null && results.rows.item(i).longitude!=null)
                 {
                    marker = new google.maps.Marker({

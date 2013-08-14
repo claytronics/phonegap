@@ -24,8 +24,10 @@ function doRequest(url,callReqd)
 function resultHandler () 
 {	
 	// request is 'ready'
+	
 	if (myxmlhttp.readyState == 4) 
 	{
+		status = 200;
 		// success
 		if (myxmlhttp.status == 200) 
 		{

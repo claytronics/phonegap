@@ -64,14 +64,12 @@ public class ringStateListener extends CordovaPlugin {
 					System.out.println("on Receive");
 					if (intent != null)
 					{	
-					  String mode = null;
 					  String state = null;
 					  String number = null;
 					  
 					  System.out.println("Action"+intent.getAction());
 					  if(intent.getAction().equals(android.media.AudioManager.RINGER_MODE_CHANGED_ACTION))
 					  {  
-						  mode = "RINGER";
 						  state = "RINGER STATUS CHANGED";
 					  }	  
 					  		

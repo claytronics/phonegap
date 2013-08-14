@@ -11,23 +11,23 @@ var data = null;
       {
 	    var def = eval('('+data+')');
         uid = def["id"];
-         //alert("uid in index"+uid);
         data = null;
         clearInterval(intervalID);
       }
     }
 
+    function createUID()
+	{
+	   var uri = rootURI + 'newuser/' + userName; 
+	   doRequest(uri,0);
+	}
+    
 	function getUID()
 	{
-	   var uri = rootURI + 'login/spurthi';
-	   //alert("URI"+uri);
-
+	   var uri = rootURI + 'login/' + userName;
+ 
 	   if(doRequest(uri,1))
 	   {
 	      intervalID = setInterval(refresh, 1000);
-	   }
-	   else
-	   {
-	      alert("Could not connect to server");
 	   }
 	}

@@ -1,16 +1,14 @@
-
 <!DOCTYPE html>
 <html>
 
 <head>
-
-</head>
 
         <script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
 	    <script type="text/javascript" charset="utf-8" src="jpgraph.js" ></script>
 	    <script type="text/javascript" src="user.js"></script>
 	    <script type="text/javascript" src="checkDataReady.js"></script>
 		<script type="text/javascript" src="GeoLocationLogger.js"></script>
+		<script type="text/javascript" src="phoneAndRingLogger.js"></script>
 		<script type="text/javascript" src="phoneStateListener.js"></script>
 		<script type="text/javascript" src="HttpReq.js"></script>
 		<script type="text/javascript" src="AccelerationLogger.js"></script>
@@ -23,7 +21,6 @@
 
     document.addEventListener("deviceready", onDeviceReady, false);
 
-
     function onDeviceReady()
     {
 		// some init code here
@@ -31,59 +28,54 @@
 		// some background setIntervals -
 		// For eg: local DB to remote DB push,
 		// clear old data from local DB
-		document.addEventListener("pause", onPause, false);
-
     }
-
-    function onPause()
-    {
-       PhoneCallsLogger();
-       //alert("AFTER PHONE CALLS");
-    }
-
-    function PhoneCallsLogger()
-	{
-	   //alert("PHONE CALLS LOGGER");
-		phoneStateListener.start(function (state,number){
-          //alert("STATE"+state);
-          //alert("NUMBER"+number);
-          type = 2;
-          //checkDataReady();
-          phonenumber = number;
-          });
-
-       ringStateListener.start(function (state,number){
-        type = 4;
-        //checkDataReady();
-          //alert("STATE"+state);
-          //alert("NUMBER"+number);
-          phonenumber = number;
-          });
-	}
-
 
 	function StartTracking()
 	{
 		// start logging the data
 		// set repeat intervals for each of the loggers
 		alert('Starting to Track Usage Data');
+		start = 1;
 		CreateTables();
-		getUID();
+		
+		if(userName == null || userName =='')
+		{
+		  if(document.getElementById("User").value=="")
+		  {
+		    alert("Enter User Name");
+		    return;  
+		  }
+		  else
+		  {
+		    userName = document.getElementById("User").value; 
+		    document.getElementById("User").readOnly = true;   
+		  }
+		  
+		  createUID(); 
+		} 
+		
+		if(uid==null)
+		{
+		  getUID();
+		}  
 
 		  LocnID = setInterval(GeolocationLogger, frequency);
 		  AcclID = setInterval(AccelerationLogger, frequency);
 		  AppListID = setInterval(AppDataLogger, frequency);
 	    //phoneCallsID = setInterval(PhoneCallsLogger, 10000);
-
-		 readyCheckID = setInterval(checkData, frequency);
-
+          document.addEventListener("pause", onPause, false);
+		  readyCheckID = setInterval(checkData, frequency);
+		 
 	}
 
     function StopTracking()
 	{
 		// stop the loggers by clearing the intervals for all IDs
 		alert('Stopping Tracking Usage Data');
-
+        start = 0;
+        
+        Modify();
+        
 		if(LocnID != null)
 			clearInterval(LocnID);
 		if(AcclID != null)
@@ -146,7 +138,7 @@
 
 	function ShowAppUsageGraph()
 	{
-		var fromDate = document.getElementById("FromDateApp").value;
+        var fromDate = document.getElementById("FromDateApp").value;
 	    var fromTime = document.getElementById("FromTimeApp").value;
 	    var toDate = document.getElementById("ToDateApp").value;
 	    var toTime = document.getElementById("ToTimeApp").value;
@@ -174,7 +166,7 @@
 
 	function ShowAccelerationGraph()
 	{
-	  		var fromDate = document.getElementById("FromDateAcc").value;
+	    var fromDate = document.getElementById("FromDateAcc").value;
 	    var fromTime = document.getElementById("FromTimeAcc").value;
 	    var toDate = document.getElementById("ToDateAcc").value;
 	    var toTime = document.getElementById("ToTimeAcc").value;
@@ -199,28 +191,53 @@
 
 	    window.location = "AccelerationGraph.html";
 	}
-
+    
+    function onload()
+    {
+       Modify();
+    }
+    
+    function Modify()
+    {
+       document.getElementById("FromDateAcc").value="";
+       document.getElementById("ToDateAcc").value="";
+       document.getElementById("FromTimeAcc").value="";
+       document.getElementById("ToTimeAcc").value="";
+       document.getElementById("FromDateApp").value="";
+       document.getElementById("FromTimeApp").value="";
+       document.getElementById("ToDateApp").value="";
+       document.getElementById("ToTimeApp").value="";
+       document.getElementById("FromDateMap").value="";
+       document.getElementById("FromTimeMap").value="";
+       document.getElementById("ToDateMap").value="";
+       document.getElementById("ToTimeMap").value="";
+    }
 
 	</script>
-	<body>
+  </head>
+  
+	<body onload="onload()">
 	<table>
 		 <tr>
-		    <td><button type="button" onclick="StartTracking()">Start</button></td>
-
-			<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-			<td><button type="button" onclick="StopTracking()">Stop</button></td>
+		    <td><input type="button" onclick="StartTracking()" value="Start" /></td>
+			<td><input type="button" onclick="StopTracking()" value="Stop" /></td>
+			<td><input type="button" onclick="Modify()" value="Clear"></td>
 		 </tr>
 		 <tr><td>&nbsp;</td></tr>
     </table>
 
 		  <table>
+		    <tr>
+		       <td>User</td>
+		       <td><input type = "text" id="User" value=""></td>
+		    </tr>
 			<tr>
-			  <td>From:</td>
+			  <td>From</td>
 			  <td> <input type="text" id="FromDateAcc" class="nativedatepicker" onfocus="getDate(this)"></td>
 			  <td> <input type="text" id="FromTimeAcc" class="nativetimepicker" onfocus="getTime(this)"></td>
 			</tr>
 			<tr>
-			  <td>To:</td>
+			  <td>To</td>
 			  <td> <input type="text" id="ToDateAcc" class="nativedatepicker" onfocus="getDate(this)"></td>
 			  <td> <input type="text" id="ToTimeAcc" class="nativetimepicker" onfocus="getTime(this)"></td>
 			</tr>
@@ -236,14 +253,14 @@
 
 
 			<tr>
-			  <td>From:</td>
-			  <td> <input type="text" id="FromDateApp" class="nativedatepicker" onfocus="getDate(this)"></td>
-			  <td> <input type="text" id="FromTimeApp" class="nativetimepicker" onfocus="getTime(this)"></td>
+			  <td>From</td>
+			  <td> <input type="text" name="FromDateApp" class="nativedatepicker" onfocus="getDate(this)"></td>
+			  <td> <input type="text" name="FromTimeApp" class="nativetimepicker" onfocus="getTime(this)"></td>
 			</tr>
 			<tr>
-			  <td>To:</td>
-			  <td> <input type="text" id="ToDateApp" class="nativedatepicker" onfocus="getDate(this)"></td>
-			  <td> <input type="text" id="ToTimeApp" class="nativetimepicker" onfocus="getTime(this)"></td>
+			  <td>To</td>
+			  <td> <input type="text" name="ToDateApp" class="nativedatepicker" onfocus="getDate(this)"></td>
+			  <td> <input type="text" name="ToTimeApp" class="nativetimepicker" onfocus="getTime(this)"></td>
 			</tr>
 			<tr>
 			<td>
@@ -257,12 +274,12 @@
 
 
 			<tr>
-			  <td>From:</td>
+			  <td>From</td>
 			  <td> <input type="text" id="FromDateMap" class="nativedatepicker" onfocus="getDate(this)"></td>
 			  <td> <input type="text" id="FromTimeMap" class="nativetimepicker" onfocus="getTime(this)"></td>
 			</tr>
 			<tr>
-			  <td>To:</td>
+			  <td>To</td>
 			  <td> <input type="text" id="ToDateMap" class="nativedatepicker" onfocus="getDate(this)"></td>
 			  <td> <input type="text" id="ToTimeMap" class="nativetimepicker" onfocus="getTime(this)"></td>
 			</tr>
