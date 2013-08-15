@@ -30,31 +30,9 @@
 		prepareGraphData();			
     }
     
-    function prepareGraphData()
+    function prepGraph(tx,results)
     {
-    	// get the info from local DB
-    	//alert('DB retrieve');
-		var fromLocalDate=localStorage.getItem('fromLocalAppDate');
-		var toLocalDate=localStorage.getItem('toLocalAppDate');
-		var fromTime=localStorage.getItem('fromTimeApp');
-		var toTime=localStorage.getItem('toTimeApp');
-       
-        if(fromLocalDate!=null && fromLocalDate!='')
-		   fromLocalDateTime = fromLocalDate+' '+fromTime;
-		else
-		   fromLocalDateTime='';
-		   
-		
-		if(toLocalDate!=null && toLocalDate!='')
-		   toLocalDateTime= toLocalDate+' '+toTime;
-		else
-		   toLocalDateTime='';
-        
-		//alert("App LocalDate " + fromLocalDate + ' ' + toLocalDate);
-		
-		db.transaction(function (tx) {
-        tx.executeSql('SELECT * FROM APPS WHERE startTime>=? and startTime<=?', [fromLocalDateTime,toLocalDateTime], function (tx, results){
-            alert("rows"+results.rows.length);
+            //alert("rows"+results.rows.length);
             for(var i=1;i<results.rows.length;i++)
             {  
             	var found = 0;
@@ -89,7 +67,56 @@
 	            }   
             }
             showAppUsageGraph();
+    }
+    
+    function prepareGraphData()
+    {
+    	// get the info from local DB
+    	//alert('DB retrieve');
+		var fromLocalDate=localStorage.getItem('fromLocalAppDate');
+		var toLocalDate=localStorage.getItem('toLocalAppDate');
+		var fromTime=localStorage.getItem('fromTimeApp');
+		var toTime=localStorage.getItem('toTimeApp');
+       
+        if(fromLocalDate!=null && fromLocalDate!='')
+		   fromLocalDateTime = fromLocalDate+' '+fromTime;
+		else
+		   fromLocalDateTime='';
+		   
+		
+		if(toLocalDate!=null && toLocalDate!='')
+		   toLocalDateTime= toLocalDate+' '+toTime;
+		else
+		   toLocalDateTime='';
+        
+		//alert("App LocalDate " + fromLocalDate + ' ' + toLocalDate);
+		
+		db.transaction(function (tx) {
+		if(fromLocalDateTime!='' && toLocalDateTime!='')
+		{
+          tx.executeSql('SELECT * FROM APPS WHERE startTime>=? and startTime<=?', [fromLocalDateTime,toLocalDateTime], function (tx, results){
+              prepGraph(tx,results); 
             },null);
+        }
+        else if(fromLocalDateTime!='' && toLocalDateTime=='')
+        {
+           tx.executeSql('SELECT * FROM APPS WHERE startTime>=?', [fromLocalDateTime], function (tx, results){
+              prepGraph(tx,results); 
+            },null);
+        }
+        else if(fromLocalDateTime=='' && toLocalDateTime!='')
+        {
+           tx.executeSql('SELECT * FROM APPS WHERE startTime<=?', [toLocalDateTime], function (tx, results){
+              prepGraph(tx,results); 
+            },null);
+        }
+        else
+        {
+             tx.executeSql('SELECT * FROM APPS', [], function (tx, results){
+               prepGraph(tx,results);
+             },null);         
+        }
+          
      	});     
     }
     

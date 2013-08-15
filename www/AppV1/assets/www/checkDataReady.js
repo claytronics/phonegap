@@ -31,7 +31,7 @@ function InsertOnServer(type)
 
       	    /*RINGER*/
       	    case 4:
-      	       var ur4 = rootURI + 'record/' + uid + '/'+ '4/' + encodeURIComponent(time) + '/' + currLat + '/' + currLon + '/' + ax + '/' + ay + '/' + az + '/' + status;
+      	       var ur4 = rootURI + 'record/' + uid + '/'+ '4/' + encodeURIComponent(time) + '/' + currLat + '/' + currLon + '/' + ax + '/' + ay + '/' + az + '/' + state;
       	       //alert(ur4);
       	       doRequest(ur4,0);
       	    break;
@@ -46,6 +46,10 @@ function InsertOnServer(type)
 
 function checkDataReady(type)
 {    
+
+//if(currLat==null || currLong==null || ax==null || ay==null || az==null)
+//return;
+
     if(uid != null)
        InsertOnServer(type);
 
@@ -109,8 +113,8 @@ function InsertPeventData(type,time)
 {
     var NoRows = null;
 
-   if((currLat!=null) && (currLon!=null) && (ax != null) && (ay != null) && (az != null))
-   {
+   //if((currLat!=null) && (currLon!=null) && (ax != null) && (ay != null) && (az != null)){
+   
       db.transaction(function (tx) 
       {
 	        tx.executeSql('SELECT * FROM PEVENT', [], function (tx, results) 
@@ -137,7 +141,7 @@ function InsertPeventData(type,time)
 	                tx.executeSql('INSERT INTO MSGS(id,phonenumber,starttime,whenRead) VALUES (?,?,?,?)',[NoRows,,,]);
 	              break;
 	              case 4:
-	                tx.executeSql('INSERT INTO RINGTONE(id,status) VALUES (?,?)',[NoRows,status]);
+	                tx.executeSql('INSERT INTO RINGTONE(id,status) VALUES (?,?)',[NoRows,state]);
 	               break;
 	              default:
 	              break;
@@ -146,7 +150,7 @@ function InsertPeventData(type,time)
 	            aTime = null;
 				lTime = null;
 	     });
-	  }   
+	  //}   
 }
 
 function InsertDataBase(type)

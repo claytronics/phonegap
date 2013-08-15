@@ -4,7 +4,7 @@
 	  if(id=='FromDateMap')
 	    localStorage.setItem('fromLocalMapDate',localDate);
 	  else if(id=='ToDateMap')
-	    localStorage.setItem('toLocalMapTime',localDate);
+	    localStorage.setItem('toLocalMapDate',localDate);
 	  else if(id=='FromDateAcc')
 	    localStorage.setItem('fromLocalAccDate',localDate);
 	  else if(id=='ToDateAcc')

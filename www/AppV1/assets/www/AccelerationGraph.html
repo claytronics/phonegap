@@ -25,9 +25,23 @@
    
     var db = openDatabase('mydb', '1.0', 'Test DB', 2 * 1024 * 1024);
     
-    function onDeviceReady() {
+    function onDeviceReady() 
+    {
 		//alert("onDeviceReady");
 		prepareGraphData();			
+    }
+    
+    function prepGraph(tx,results)
+    {
+      alert("rows"+results.rows.length);
+            for(var i=1;i<results.rows.length;i++)
+            {  
+                //alert("Accl. "+ results.rows.item(i).ax + results.rows.item(i).ay + results.rows.item(i).az);
+                dailyAcclArr[i] = (results.rows.item(i).ax + results.rows.item(i).az + results.rows.item(i).ay).toString();
+                //alert(dailyAcclArr[i]);
+                SampledTime = SampledTime.concat(results.rows.item(i).date + '|');
+            }
+            showGraph();
     }
     
     function prepareGraphData()
@@ -54,18 +68,31 @@
         //alert("Accln LocalDateTime"+fromLocalDateTime+"toLocalDateTime"+toLocalDateTime);
 		
 		db.transaction(function (tx) {
-        tx.executeSql('SELECT * FROM PEVENT WHERE date>=? and date<=?', [fromLocalDateTime, toLocalDateTime], function (tx, results){
-           alert("rows"+results.rows.length);
-            for(var i=1;i<results.rows.length;i++)
-            {  
-                //alert("Accl. "+ results.rows.item(i).ax + results.rows.item(i).ay + results.rows.item(i).az);
-                dailyAcclArr[i] = (results.rows.item(i).ax + results.rows.item(i).az + results.rows.item(i).ay).toString();
-                //alert(dailyAcclArr[i]);
-                SampledTime = SampledTime.concat(results.rows.item(i).date + '|');
-            }
-            showGraph();
+		if(fromLocalDateTime!='' && toLocalDateTime!='')
+		{
+           tx.executeSql('SELECT * FROM PEVENT WHERE date>=? and date<=?', [fromLocalDateTime, toLocalDateTime], function (tx, results){
+             prepGraph(tx,results);
             },null);
-     	});     
+     	}
+     	else if(fromLocalDateTime!='' && toLocalDateTime=='')
+     	{
+           tx.executeSql('SELECT * FROM PEVENT WHERE date>=?', [fromLocalDateTime], function (tx, results){
+             prepGraph(tx,results);
+            },null);
+     	}
+     	else if(fromLocalDateTime=='' && toLocalDateTime!='')
+     	{
+     	   tx.executeSql('SELECT * FROM PEVENT WHERE date<=?', [toLocalDateTime], function (tx, results){
+             prepGraph(tx,results);
+            },null);
+     	}
+     	else
+     	{
+     	   tx.executeSql('SELECT * FROM PEVENT', [], function (tx, results){
+               prepGraph(tx,results);
+            },null);
+     	 } 
+      });        
     }
     
     function showGraph(){

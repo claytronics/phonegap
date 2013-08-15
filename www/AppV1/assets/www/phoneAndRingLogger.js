@@ -9,8 +9,8 @@ function PhoneCallsLogger()
 {
 	   //alert("PHONE CALLS LOGGER");
 		phoneStateListener.start(function (state,number){
-		   //alert("STATE"+state);
-		   //alert("number"+number);
+		   //alert("STATE in phone"+state);
+		   //alert("number in phone"+number);
           checkDataReady(2);
           phonenumber = number;
           });
@@ -19,5 +19,6 @@ function PhoneCallsLogger()
 		  //alert("state"+state);
           checkDataReady(4);
           state = state;
+          //alert("state in ring"+state);
           });
 }

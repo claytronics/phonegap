@@ -144,34 +144,9 @@
           
     }
  
-    
-    function selectLocalDB(fromTime,toTime)
+    function showCenter(tx,results)
     {
- 
-       var fromLocalDate=localStorage.getItem('fromLocalMapDate');
-       var toLocalDate=localStorage.getItem('toLocalMapDate');
-       
-       //alert("fromLocalDate"+fromLocalDate);
-       //alert("toLocalDate"+toLocalDate);
-       if(fromLocalDate!=null && fromLocalDate!='')
-		   fromLocalDateTime = fromLocalDate+' '+fromTime;
-		else
-		   fromLocalDateTime='';
-		   
-		
-		if(toLocalDate!=null && toLocalDate!='')
-		   toLocalDateTime= toLocalDate+' '+toTime;
-		else
-		   toLocalDateTime='';
-        
-       
-      db.transaction(function (tx) {
-        
-        tx.executeSql('SELECT * FROM PEVENT WHERE id in (SELECT MAX(id) FROM PEVENT WHERE DATE>=? and DATE<=?)', [fromLocalDateTime,toLocalDateTime], function (tx, results){
-          
-          //alert("results"+results.rows.item(0));
-          
-          if(results.rows.item(0).latitude!=null && results.rows.item(0).longitude!=null)
+      if(results.rows.item(0).latitude!=null && results.rows.item(0).longitude!=null)
           {
              var myLocation = new google.maps.LatLng(results.rows.item(0).latitude, results.rows.item(0).longitude);
           
@@ -181,15 +156,11 @@
 	                             zoom: 15
                                  });
           }
-                                 
-         },null);
-         
-        });     
-                            
-        db.transaction(function (tx) {
-          tx.executeSql('SELECT * FROM PEVENT WHERE DATE<=? and DATE>=?', [toLocalDateTime,fromLocalDateTime], function (tx, results){
-          
-           //alert("rows"+results.rows.length);
+    } 
+    
+    function showMap(tx,results)
+    {
+       //alert("rows"+results.rows.length);
             for(var i=1;i<results.rows.length;i++)
             {  
                 //alert("time"+results.rows.item(i).date);
@@ -204,10 +175,83 @@
                    attachSecretMessage(marker, i,results.rows.item(i).date);
                 } 
             }
-            
-       },null);
-     }); 
+    }
+
+    function selectLocalDB(fromTime,toTime)
+    {
+       var fromLocalDate=localStorage.getItem('fromLocalMapDate');
+       var toLocalDate=localStorage.getItem('toLocalMapDate');
+       
+       if(fromLocalDate!=null && fromLocalDate!='')
+		   fromLocalDateTime = fromLocalDate+' '+fromTime;
+		else
+		   fromLocalDateTime='';
+		   
+		
+		if(toLocalDate!=null && toLocalDate!='')
+		   toLocalDateTime= toLocalDate+' '+toTime;
+		else
+		   toLocalDateTime='';
+        
+       
+      db.transaction(function (tx) {
+        
+        if(fromLocalDateTime!='' && toLocalDateTime!='')
+        {
+          tx.executeSql('SELECT * FROM PEVENT WHERE id in (SELECT MAX(id) FROM PEVENT WHERE DATE>=? and DATE<=?)', [fromLocalDateTime,toLocalDateTime], function (tx, results){
+                  showCenter(tx,results);         
+           },null);
+        }
+        else if(fromLocalDateTime!='' && toLocalDateTime=='')
+        {
+          tx.executeSql('SELECT * FROM PEVENT WHERE id in (SELECT MAX(id) FROM PEVENT WHERE DATE>=?)', [fromLocalDateTime], function (tx, results){
+                  showCenter(tx,results);         
+           },null);
+        }
+        else if(fromLocalDateTime=='' && toLocalDateTime!='')
+        {
+           tx.executeSql('SELECT * FROM PEVENT WHERE id in (SELECT MAX(id) FROM PEVENT WHERE DATE<=?)', [toLocalDateTime], function (tx, results){
+                  showCenter(tx,results);         
+           },null);
+        }
+        else
+        {
+           tx.executeSql('SELECT * FROM PEVENT WHERE id in (SELECT MAX(id) FROM PEVENT)', [], function (tx, results){
+                  showCenter(tx,results);         
+           },null);        
+        }
+        
+      });     
+                                                  
+        db.transaction(function (tx) {
+        
+        if(fromLocalDateTime!='' && toLocalDateTime!='')
+        {
+          tx.executeSql('SELECT * FROM PEVENT WHERE DATE<=? and DATE>=?', [toLocalDateTime,fromLocalDateTime], function (tx, results){
+            showMap(tx,results);
+           },null);
+        }
+        else if(fromLocalDateTime!='' && toLocalDateTime=='')
+        {
+          tx.executeSql('SELECT * FROM PEVENT WHERE DATE>=?', [fromLocalDateTime], function (tx, results){
+            showMap(tx,results);
+           },null);
+        }
+        else if(fromLocalDateTime=='' && toLocalDateTime!='')
+        {
+          tx.executeSql('SELECT * FROM PEVENT WHERE DATE<=?', [toLocalDateTime], function (tx, results){
+            showMap(tx,results);
+           },null);
+        }           
+        else
+        {
+          tx.executeSql('SELECT * FROM PEVENT', [], function (tx, results){
+            showMap(tx,results);
+           },null);
+        }
       
+     });      
+     
     }
            
   function attachSecretMessage(marker, number, time) 
