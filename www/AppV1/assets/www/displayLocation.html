@@ -158,25 +158,7 @@
           }
     } 
     
-    function showMap(tx,results)
-    {
-       //alert("rows"+results.rows.length);
-            for(var i=1;i<results.rows.length;i++)
-            {  
-                //alert("time"+results.rows.item(i).date);
-                if(results.rows.item(i).latitude!=null && results.rows.item(i).longitude!=null)
-                {
-                   marker = new google.maps.Marker({
-                            position: new google.maps.LatLng(results.rows.item(i).latitude,results.rows.item(i).longitude),
-                            map: map,
-                            animation: google.maps.Animation.DROP
-                            });
-                 
-                   attachSecretMessage(marker, i,results.rows.item(i).date);
-                } 
-            }
-    }
-
+    
     function selectLocalDB(fromTime,toTime)
     {
        var fromLocalDate=localStorage.getItem('fromLocalMapDate');
@@ -253,12 +235,41 @@
      });      
      
     }
+  
+  function showMap(tx,results)
+  {
+      var apps='';
+       //alert("rows"+results.rows.length);
+            for(var i=1;i<results.rows.length;i++)
+            {  
+                alert("time"+results.rows.item(i).date);
+                //if(results.rows.item(i).latitude!=null && results.rows.item(i).longitude!=null)
+                //{
+                   marker = new google.maps.Marker({
+                            position: new google.maps.LatLng(results.rows.item(i).latitude,results.rows.item(i).longitude),
+                            map: map,
+                            animation: google.maps.Animation.DROP
+                            });
+                   
+                   tx.executeSql('SELECT NAME FROM APPS WHERE STARTTIME<=? AND ENDTIME>=? AND FG=?', [results.rows.item(i).date,results.rows.item(i).date,100], function (tx, results){
+                   alert("results"+results.rows.length);
+                     for(j=1;j<results.rows.length;j++)
+                     {
+                       apps += results.rows.item(j).name + "\n";
+                       alert("apps"+apps);
+                     }   
+                   },null);         
+                 
+                   attachSecretMessage(marker, i,results.rows.item(i).date,apps);
+                //} 
+            }
+  }
            
-  function attachSecretMessage(marker, number, time) 
+  function attachSecretMessage(marker, number, time, apps) 
   {
     
     var infowindow = new google.maps.InfoWindow(
-      { content: time,
+      { content: time + "\n" + apps,
         size: new google.maps.Size(200,200)
       });
   
