@@ -1,5 +1,4 @@
-
-    var uid = null;
+ var uid = null;
     var watchID = null;
 	var AcclID = null;
 	var LocnID = null;
@@ -21,6 +20,7 @@
 	var lTime = null;
 	var AppData = null;
 	var state = null;
+	var states = null;
 	var phonenumber = null;
     var start = 0;
 	var db = openDatabase('mydb', '1.0', 'Test DB', 2 * 1024 * 1024);
@@ -42,4 +42,3 @@
 	var callsDone = 0;
 	var msgsDone = 0;
 	var ringerDone = 0;
-	
