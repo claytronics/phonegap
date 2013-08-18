@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-  
+
     <title>App List</title>
-    
+
     <style type="text/css">
         html, body, #geoLocation {
             margin: 0;
@@ -11,28 +11,28 @@
             height: 100%;
         }
     </style>
-    
+
     <script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
     <script type="text/javascript" src="HttpReq.js"></script>
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script type="text/javascript" charset="utf-8">
-	
+
     var map;
     var eventID = null;
     var infoID = null;
     var rootURI = "http://128.237.207.145:80/a/";
     var uid = null;
     var db = openDatabase('mydb', '1.0', 'Test DB', 2 * 1024 * 1024);
-    
+
     google.maps.event.addDomListener(window, 'load', setup);
-    
-    
+
+
     function getInfo()
     {
       var i=0;
       var centerLatitude = null;
       var centerLongitude = null;
-      
+
       if(data!=null && data!='undefined')
       {
         clearInterval(infoID);
@@ -42,7 +42,7 @@
            {
              var String = JSON.stringify(def[element]);
              var local  = eval('('+String+')');
-             
+
              if(local["latitude"]!=null && local["longitude"]!=null)
              {
                  i++;
@@ -51,38 +51,38 @@
                             map: map,
                             animation: google.maps.Animation.DROP
                             });
-                 
+
                  attachSecretMessage(marker, i,local["date"]);
-                 
+
                  centerLatitude = local["latitude"];
                  centerLongitude = local["longitude"];
               }
-             
+
            }
-           
+
            if(centerLatitude!=null && centerLongitude!=null)
            {
              var myLocation = new google.maps.LatLng(centerLatitude,centerLongitude);
-          
+
                  map  = new google.maps.Map(document.getElementById('geoLocation'), {
 	                             mapTypeId: google.maps.MapTypeId.ROADMAP,
  	                             center: myLocation,
 	                             zoom: 15
                                  });
            }
-           
+
         data = null;
-        
+
       }
-      
+
     }
-    
+
     function getEvent()
     {
       if(data!=null && data!='undefined')
       {
 	    var localUrl = rootURI + 'info';
-        
+
         var def = eval('('+data+')');
            for(element in def)
            {
@@ -90,123 +90,123 @@
              var local  = eval('('+String+')');
              localUrl = localUrl + '/' + local["_id"];
            }
-        
-        
+
+
         data = null;
         clearInterval(eventID);
-       
+
         if(doRequest(localUrl,1))
           infoID = setInterval(function(){getInfo(1000)}, 1000);
       }
-          
+
     }
-    
+
     function selectFromServer(fromTime,toTime)
     {
        var timestamp = null;
        var fromDate=localStorage.getItem('fromDate');
        var toDate=localStorage.getItem('toDate');
-      
+
        var url = rootURI + 'getevents/' + uid + '/0';
        if(fromDate!='' && fromTime!='')
        {
          timestamp = fromDate+' '+fromTime+' ';
          url = url + '/' + encodeURIComponent(timestamp);
-       } 
+       }
        if(toDate!='' && toTime!='')
        {
          timestamp = toDate+' '+toTime+' ';
          url = url + '/' + encodeURIComponent(timestamp);
-       } 
-       
+       }
+
        if(timestamp!=null)
        {
          url = url + '%20GMT';
-       }  
-         
+       }
+
        //alert("url"+url);
-                
+
        if(doRequest(url,1))
-         eventID = setInterval(function(){getEvent(1000)}, 1000);     
-    
+         eventID = setInterval(function(){getEvent(1000)}, 1000);
+
     }
-    
-    function setup() 
+
+    function setup()
     {
        var fromTime=localStorage.getItem('fromTime');
        var toTime=localStorage.getItem('toTime');
        uid = localStorage.getItem('UID');
-       
+
        /*if(uid!=null)
          selectFromServer(fromTime,toTime);
        else*/
          selectLocalDB(fromTime,toTime);
-          
+
     }
- 
+
     function showCenter(tx,results)
     {
       if(results.rows.item(0).latitude!=null && results.rows.item(0).longitude!=null)
           {
              var myLocation = new google.maps.LatLng(results.rows.item(0).latitude, results.rows.item(0).longitude);
-          
+
              map  = new google.maps.Map(document.getElementById('geoLocation'), {
 	                             mapTypeId: google.maps.MapTypeId.ROADMAP,
  	                             center: myLocation,
 	                             zoom: 15
                                  });
           }
-    } 
-    
-    
+    }
+
+
     function selectLocalDB(fromTime,toTime)
     {
        var fromLocalDate=localStorage.getItem('fromLocalMapDate');
        var toLocalDate=localStorage.getItem('toLocalMapDate');
-       
+
        if(fromLocalDate!=null && fromLocalDate!='')
 		   fromLocalDateTime = fromLocalDate+' '+fromTime;
 		else
 		   fromLocalDateTime='';
-		   
-		
+
+
 		if(toLocalDate!=null && toLocalDate!='')
 		   toLocalDateTime= toLocalDate+' '+toTime;
 		else
 		   toLocalDateTime='';
-        
-       
+
+
       db.transaction(function (tx) {
-        
+
         if(fromLocalDateTime!='' && toLocalDateTime!='')
         {
           tx.executeSql('SELECT * FROM PEVENT WHERE id in (SELECT MAX(id) FROM PEVENT WHERE DATE>=? and DATE<=?)', [fromLocalDateTime,toLocalDateTime], function (tx, results){
-                  showCenter(tx,results);         
+                  showCenter(tx,results);
            },null);
         }
         else if(fromLocalDateTime!='' && toLocalDateTime=='')
         {
           tx.executeSql('SELECT * FROM PEVENT WHERE id in (SELECT MAX(id) FROM PEVENT WHERE DATE>=?)', [fromLocalDateTime], function (tx, results){
-                  showCenter(tx,results);         
+                  showCenter(tx,results);
            },null);
         }
         else if(fromLocalDateTime=='' && toLocalDateTime!='')
         {
            tx.executeSql('SELECT * FROM PEVENT WHERE id in (SELECT MAX(id) FROM PEVENT WHERE DATE<=?)', [toLocalDateTime], function (tx, results){
-                  showCenter(tx,results);         
+                  showCenter(tx,results);
            },null);
         }
         else
         {
            tx.executeSql('SELECT * FROM PEVENT WHERE id in (SELECT MAX(id) FROM PEVENT)', [], function (tx, results){
-                  showCenter(tx,results);         
-           },null);        
+                  showCenter(tx,results);
+           },null);
         }
-        
-      });     
-                                                  
+
+      });
+
         db.transaction(function (tx) {
-        
+
         if(fromLocalDateTime!='' && toLocalDateTime!='')
         {
           tx.executeSql('SELECT * FROM PEVENT WHERE DATE<=? and DATE>=?', [toLocalDateTime,fromLocalDateTime], function (tx, results){
@@ -224,65 +224,65 @@
           tx.executeSql('SELECT * FROM PEVENT WHERE DATE<=?', [toLocalDateTime], function (tx, results){
             showMap(tx,results);
            },null);
-        }           
+        }
         else
         {
           tx.executeSql('SELECT * FROM PEVENT', [], function (tx, results){
             showMap(tx,results);
            },null);
         }
-      
-     });      
-     
+
+     });
+
     }
-  
+
   function showMap(tx,results)
   {
       var apps='';
        //alert("rows"+results.rows.length);
             for(var i=1;i<results.rows.length;i++)
-            {  
+            {
                 alert("time"+results.rows.item(i).date);
-                //if(results.rows.item(i).latitude!=null && results.rows.item(i).longitude!=null)
-                //{
+                if(results.rows.item(i).latitude!=null && results.rows.item(i).longitude!=null)
+                {
                    marker = new google.maps.Marker({
                             position: new google.maps.LatLng(results.rows.item(i).latitude,results.rows.item(i).longitude),
                             map: map,
                             animation: google.maps.Animation.DROP
                             });
-                   
+
                    tx.executeSql('SELECT NAME FROM APPS WHERE STARTTIME<=? AND ENDTIME>=? AND FG=?', [results.rows.item(i).date,results.rows.item(i).date,100], function (tx, results){
                    alert("results"+results.rows.length);
                      for(j=1;j<results.rows.length;j++)
                      {
                        apps += results.rows.item(j).name + "\n";
                        alert("apps"+apps);
-                     }   
-                   },null);         
-                 
+                     }
+                   },null);
+
                    attachSecretMessage(marker, i,results.rows.item(i).date,apps);
-                //} 
+                }
             }
   }
-           
-  function attachSecretMessage(marker, number, time, apps) 
+
+  function attachSecretMessage(marker, number, time, apps)
   {
-    
+
     var infowindow = new google.maps.InfoWindow(
       { content: time + "\n" + apps,
         size: new google.maps.Size(200,200)
       });
-  
+
     google.maps.event.addListener(marker, 'click', function() {
     infowindow.open(map,marker);
       });
   }
-   
-   
+
+
     </script>
   </head>
-  
+
   <body>
-  <div id="geoLocation"> Waiting to List Running Apps </div>        
+  <div id="geoLocation"> Waiting to List Running Apps </div>
   </body>
 </html>
