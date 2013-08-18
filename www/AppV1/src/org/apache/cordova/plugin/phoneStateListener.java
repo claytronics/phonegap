@@ -81,17 +81,19 @@ public class phoneStateListener extends CordovaPlugin {
 							{
 								System.out.println("TRYING TO GET NO.");
 								number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
+								
+								final JSONObject data = new JSONObject();
+							    try
+							    { 
+								  data.put("state", state);
+								  data.put("number", number);
+						        }
+							     catch(final JSONException e){};
+							     callbackContext.success(data);
 							}
 					  }
 					  	
-					 		final JSONObject data = new JSONObject();
-							try
-							  {
-								data.put("state", state);
-								data.put("number", number);
-						      }
-							catch(final JSONException e){};
-							callbackContext.success(data);
+					 		
 					  
 				  }
 				}
