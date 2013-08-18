@@ -18,7 +18,11 @@
 		{
 			AppData = AppEvent.split('|');
 			//alert('App logger success ' + AppData.length);
-			for(var i = 0; i < Math.floor(AppData.length/11) * 11; i=i+11)
+			
+			type = 1;
+			
+			// below code(or some version of it) moved to InsertOnServer			
+			/*for(var i = 0; i < Math.floor(AppData.length/11) * 11; i=i+11)
 			{
 				var uri = rootURI + 'record/' + uid + '/' + '1/' + encodeURIComponent(getTimeStamp()) + '/' 
 				+ AppData[i+0] + '/' + AppData[i+1] + '/' + AppData[i+2] + '/' + AppData[i+3] + '/' + AppData[i+4] + '/' 
@@ -27,7 +31,7 @@
 					// Name              FG?                   Imp                  Start                                    End                                    Term?
 				//alert('sending app data ' + uri);
 				doRequest(uri);				
-			}
+			}*/
 			
 			//alert('Calling InsertDB');
 			InsertDataBase(1);

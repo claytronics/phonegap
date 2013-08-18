@@ -9,9 +9,8 @@
 	var readyCheckID = null;
 	var intervalID = null;
 
-	var frequency = 10000;
-	var rootURI = "http://128.237.207.145:80/a/";
-    //var rootURI = "http://192.168.56.1:80/a/"
+	var frequency = 60000;
+	var rootURI = "http://192.168.1.20:80/a/";
     var userName = null;
 	var currLat = null;
 	var currLon = null;
@@ -35,4 +34,12 @@
     var toLocMapDate=null;
     var status = 0;
 
-
+	/* DB syncing vars */
+	var peventNumRows = null;
+	var pEventResults = null;
+	var pEventsDone = 0;
+	var appsDone = 0;
+	var callsDone = 0;
+	var msgsDone = 0;
+	var ringerDone = 0;
+	

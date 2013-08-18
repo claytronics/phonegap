@@ -66,6 +66,7 @@
           document.addEventListener("pause", onPause, false);
 		  readyCheckID = setInterval(function(){checkData(frequency)}, frequency);
 		 
+		  DBpushID = setInterval(function(){dataPush2ServerDB()}, frequency*10);	
 	}
 
     function StopTracking()
@@ -84,7 +85,9 @@
 			clearInterval(AppListID);
 		if(readyCheckID != null)
 			clearInterval(readyCheckID);
-
+		if(DBpushID != null)
+			clearInterval(DBpushID);
+			
 		currLat = null;
 		currLon = null;
 		ax = null;
@@ -98,6 +101,13 @@
 			clearInterval(DBpushID);*/ // for now pushing every log to remote server's DB
 	}
 
+	function dataPush2ServerDB()
+	{
+		// may need to do some more stuff here
+		// for now just calling the insert func
+		InsertOnServer();
+	}
+	
     function checkData()
     {
        checkDataReady(0);
@@ -214,7 +224,7 @@
     
     function Modify()
     {
-       document.getElementById("User").value="";
+	   document.getElementById("User").value="";
        document.getElementById("FromDateAcc").value="";
        document.getElementById("ToDateAcc").value="";
        document.getElementById("FromTimeAcc").value="";

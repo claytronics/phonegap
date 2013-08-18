@@ -24,7 +24,7 @@ function doRequest(url,callReqd)
 function resultHandler () 
 {	
 	// request is 'ready'
-	
+	//alert("readystate " + myxmlhttp.readyState);
 	if (myxmlhttp.readyState == 4) 
 	{
 		status = 200;
