@@ -28,7 +28,7 @@ function checkConnection() {
 		}
 		else
 			return 0;
-        alert('Connection type: ' + states[networkState]);
+        //alert('Connection type: ' + states[networkState]);
 }
 
 function InsertOnServer()
@@ -36,10 +36,11 @@ function InsertOnServer()
 	
 	/* retrieve from local DB and push to remote DB */
 	
-	//alert("In InsertOnServer");
+	//alert("In InsertOnServer " + pEventsDone + ' ' + appsDone + ' ' + callsDone + ' ' + msgsDone + ' ' +  ringerDone);
 	
 	if((pEventsDone == 1) && (appsDone == 1) && (callsDone == 1) && (msgsDone == 1) && (ringerDone == 1))	
 	{
+		//alert("resetting flags");
 		pEventsDone = 0;
 		appsDone = 0;
 		callsDone = 0;
@@ -93,6 +94,7 @@ function InsertOnServer()
 							}
 						}	
 					}
+					//alert("pEventsDone = 1");
 					pEventsDone = 1;
 					
 				}
@@ -129,7 +131,7 @@ function InsertOnServer()
 			if(nw == 1)
 			{
 				/* append apps table data */
-				//alert("In InsertOnServer case apps");
+				//alert("In InsertOnServer case apps " + pEventResultIds.length);
 				tx.executeSql('SELECT * FROM APPS WHERE id IN (' + qArray + ')', pEventResultIds, 
 					function (tx, appres)
 					{
@@ -146,6 +148,7 @@ function InsertOnServer()
 				
 							peventNumRows.push(pEventResults.rows.item(pEventIndex[j]).id);									
 						}
+						//alert("appsDone = 1");
 						appsDone = 1;
 					}
 				, null);
@@ -184,7 +187,7 @@ function InsertOnServer()
 			if(nw == 1)
 			{
 				/* append calls table data */
-				//alert("In InsertOnServer case calls");
+				//alert("In InsertOnServer case calls " + pEventResultIds.length);
 
 				tx.executeSql('SELECT * FROM CALLS WHERE id IN ('+ qArray +')', pEventResultIds, 
 					function (tx, callres)
@@ -205,6 +208,7 @@ function InsertOnServer()
 							peventNumRows.push(pEventResults.rows.item(pEventIndex[j]).id);									
 							
 						}
+						//alert("callsDone = 1");
 						callsDone = 1;							
 					}
 				, null);
@@ -243,7 +247,7 @@ function InsertOnServer()
 			if(nw == 1)
 			{
 				/* append msgs table data */
-				//alert("In InsertOnServer case msgs");
+				//alert("In InsertOnServer case msgs " + pEventResultIds.length);
 
 				tx.executeSql('SELECT * FROM MSGS WHERE id IN ('+ qArray +')', pEventResultIds, 
 					function (tx, msgres)
@@ -264,6 +268,7 @@ function InsertOnServer()
 							peventNumRows.push(pEventResults.rows.item(pEventIndex[j]).id);									
 							
 						}
+						//alert("msgsDone = 1");
 						msgsDone = 1;							
 					}
 				, null);
@@ -303,8 +308,7 @@ function InsertOnServer()
 			if(nw == 1)
 			{
 				/* append ringer table data */
-				//alert("In InsertOnServer case ringer");
-
+				//alert("In InsertOnServer case ringer " + pEventResultIds.length);
 				tx.executeSql('SELECT * FROM RINGTONE WHERE id IN ('+ qArray +')', pEventResultIds, 
 					function (tx, ringerres)
 					{
@@ -315,13 +319,14 @@ function InsertOnServer()
 							//alert("RINGTONE event insert to server " + ringerres.rows.length);
 							var uri = rootURI + 'record/' + uid + '/' + pEventResults.rows.item(pEventIndex[j]).type + '/' + encodeURIComponent(pEventResults.rows.item(pEventIndex[j]).date) + '/' 
 							+ pEventResults.rows.item(pEventIndex[j]).latitude + '/' + pEventResults.rows.item(pEventIndex[j]).longitude + '/' + pEventResults.rows.item(pEventIndex[j]).ax + '/' + pEventResults.rows.item(pEventIndex[j]).ay + '/' + pEventResults.rows.item(pEventIndex[j]).az + '/' 
-							+ ringres.rows.item(j).status;
+							+ ringerres.rows.item(j).status;
 							
 							doRequest(uri, 0);
 				
 							peventNumRows.push(pEventResults.rows.item(pEventIndex[j]).id);									
 							
 						}
+						//alert("ringerDone = 1");
 						ringerDone = 1;							
 					}
 				, null);
