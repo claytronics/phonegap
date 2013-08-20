@@ -22,7 +22,7 @@ function checkConnection() {
         states[Connection.CELL]     = 'Cell generic connection';
         states[Connection.NONE]     = 'No network connection';
 
-		if((networkState == Connection.WIFI) || (networkState == Connection.CELL_4G) || (networkState == Connection.CELL_3G))
+		if((networkState == Connection.WIFI) || (networkState == Connection.CELL_4G) || (networkState == Connection.CELL_3G) || (networkState == Connection.CELL_2G))
 		{
 			return 1;
 		}
@@ -127,16 +127,17 @@ function InsertOnServer()
 				
 			//alert('Apps ' + qArray + ' ' + pEventResultIds.join());
 			
-			var nw = checkConnection();
-			if(nw == 1)
-			{
-				/* append apps table data */
-				//alert("In InsertOnServer case apps " + pEventResultIds.length);
-				tx.executeSql('SELECT * FROM APPS WHERE id IN (' + qArray + ')', pEventResultIds, 
-					function (tx, appres)
+			/* append apps table data */
+			//alert("In InsertOnServer case apps " + pEventResultIds.length);
+			tx.executeSql('SELECT * FROM APPS WHERE id IN (' + qArray + ')', pEventResultIds, 
+				function (tx, appres)
+				{
+					for(var j=0;j<appres.rows.length;j++)  
 					{
-						for(var j=0;j<appres.rows.length;j++)  
+						var nw = checkConnection();
+						if(nw == 1)
 						{
+			
 							//alert("Apps event insert to server " + appres.rows.length);
 							var uri = rootURI + 'record/' + uid + '/1/' + encodeURIComponent(pEventResults.rows.item(pEventIndex[j]).date) + '/' 
 							+ pEventResults.rows.item(pEventIndex[j]).latitude + '/' + pEventResults.rows.item(pEventIndex[j]).longitude + '/' + pEventResults.rows.item(pEventIndex[j]).ax + '/' + pEventResults.rows.item(pEventIndex[j]).ay + '/' + pEventResults.rows.item(pEventIndex[j]).az + '/' 
@@ -147,14 +148,12 @@ function InsertOnServer()
 							doRequest(uri, 0);
 				
 							peventNumRows.push(pEventResults.rows.item(pEventIndex[j]).id);									
-						}
-						//alert("appsDone = 1");
-						appsDone = 1;
+						}	
 					}
-				, null);
-				
-					
-			}
+					//alert("appsDone = 1");
+					appsDone = 1;
+				}
+			, null);			
 		}		
 		); // db transacn apps
 		
@@ -183,18 +182,18 @@ function InsertOnServer()
 				
 			//alert('Calls ' + qArray + ' ' + pEventResultIds.join());
 			
-			var nw = checkConnection();
-			if(nw == 1)
-			{
-				/* append calls table data */
-				//alert("In InsertOnServer case calls " + pEventResultIds.length);
+			/* append calls table data */
+			//alert("In InsertOnServer case calls " + pEventResultIds.length);
 
-				tx.executeSql('SELECT * FROM CALLS WHERE id IN ('+ qArray +')', pEventResultIds, 
-					function (tx, callres)
+			tx.executeSql('SELECT * FROM CALLS WHERE id IN ('+ qArray +')', pEventResultIds, 
+				function (tx, callres)
+				{
+					// not necessary to loop for length:
+					// there should be only one entry in CALLS table with this id
+					for(var j=0;j<callres.rows.length;j++)  
 					{
-						// not necessary to loop for length:
-						// there should be only one entry in CALLS table with this id
-						for(var j=0;j<callres.rows.length;j++)  
+						var nw = checkConnection();
+						if(nw == 1)
 						{
 							//alert("Calls event insert to server " + callres.rows.length);
 							var uri = rootURI + 'record/' + uid + '/' + pEventResults.rows.item(pEventIndex[j]).type + '/' + encodeURIComponent(pEventResults.rows.item(pEventIndex[j]).date) + '/' 
@@ -206,13 +205,13 @@ function InsertOnServer()
 							doRequest(uri, 0);
 				
 							peventNumRows.push(pEventResults.rows.item(pEventIndex[j]).id);									
-							
 						}
-						//alert("callsDone = 1");
-						callsDone = 1;							
 					}
-				, null);
-			}	
+					//alert("callsDone = 1");
+					callsDone = 1;							
+				}
+			, null);
+		
 			
 			
 		}
@@ -243,18 +242,18 @@ function InsertOnServer()
 				
 			//alert('Msgs ' + qArray + ' ' + pEventResultIds.join());
 			
-			var nw = checkConnection();
-			if(nw == 1)
-			{
-				/* append msgs table data */
-				//alert("In InsertOnServer case msgs " + pEventResultIds.length);
+			/* append msgs table data */
+			//alert("In InsertOnServer case msgs " + pEventResultIds.length);
 
-				tx.executeSql('SELECT * FROM MSGS WHERE id IN ('+ qArray +')', pEventResultIds, 
-					function (tx, msgres)
+			tx.executeSql('SELECT * FROM MSGS WHERE id IN ('+ qArray +')', pEventResultIds, 
+				function (tx, msgres)
+				{
+					// not necessary to loop for length:
+					// there should be only one entry in CALLS table with this id
+					for(var j=0;j<msgres.rows.length;j++)  
 					{
-						// not necessary to loop for length:
-						// there should be only one entry in CALLS table with this id
-						for(var j=0;j<msgres.rows.length;j++)  
+						var nw = checkConnection();
+						if(nw == 1)
 						{
 							//alert("Msgs event insert to server " + msgres.rows.length);
 							var uri = rootURI + 'record/' + uid + '/' + pEventResults.rows.item(pEventIndex[j]).type + '/' + encodeURIComponent(pEventResults.rows.item(pEventIndex[j]).date) + '/' 
@@ -266,13 +265,13 @@ function InsertOnServer()
 							doRequest(uri, 0);
 				
 							peventNumRows.push(pEventResults.rows.item(pEventIndex[j]).id);									
-							
 						}
-						//alert("msgsDone = 1");
-						msgsDone = 1;							
 					}
-				, null);
-			}	
+					//alert("msgsDone = 1");
+					msgsDone = 1;							
+				}
+			, null);
+		
 			
 			
 		}
@@ -304,18 +303,18 @@ function InsertOnServer()
 				
 			//alert('Ringer ' + qArray + ' ' + pEventResultIds.join());
 			
-			var nw = checkConnection();
-			if(nw == 1)
-			{
-				/* append ringer table data */
-				//alert("In InsertOnServer case ringer " + pEventResultIds.length);
-				tx.executeSql('SELECT * FROM RINGTONE WHERE id IN ('+ qArray +')', pEventResultIds, 
-					function (tx, ringerres)
+			/* append ringer table data */
+			//alert("In InsertOnServer case ringer " + pEventResultIds.length);
+			tx.executeSql('SELECT * FROM RINGTONE WHERE id IN ('+ qArray +')', pEventResultIds, 
+				function (tx, ringerres)
+				{
+					// not necessary to loop for length:
+					// there should be only one entry in CALLS table with this id
+					for(var j=0;j<ringerres.rows.length;j++)  
 					{
-						// not necessary to loop for length:
-						// there should be only one entry in CALLS table with this id
-						for(var j=0;j<ringerres.rows.length;j++)  
-						{
+						var nw = checkConnection();
+						if(nw == 1)
+						{						
 							//alert("RINGTONE event insert to server " + ringerres.rows.length);
 							var uri = rootURI + 'record/' + uid + '/' + pEventResults.rows.item(pEventIndex[j]).type + '/' + encodeURIComponent(pEventResults.rows.item(pEventIndex[j]).date) + '/' 
 							+ pEventResults.rows.item(pEventIndex[j]).latitude + '/' + pEventResults.rows.item(pEventIndex[j]).longitude + '/' + pEventResults.rows.item(pEventIndex[j]).ax + '/' + pEventResults.rows.item(pEventIndex[j]).ay + '/' + pEventResults.rows.item(pEventIndex[j]).az + '/' 
@@ -324,15 +323,13 @@ function InsertOnServer()
 							doRequest(uri, 0);
 				
 							peventNumRows.push(pEventResults.rows.item(pEventIndex[j]).id);									
-							
-						}
-						//alert("ringerDone = 1");
-						ringerDone = 1;							
+						}	
 					}
-				, null);
-			}	
-			
-			
+					//alert("ringerDone = 1");
+					ringerDone = 1;							
+				}
+			, null);
+	
 		}
 		); // db transacn ringer
 	} //if peventrow == null
