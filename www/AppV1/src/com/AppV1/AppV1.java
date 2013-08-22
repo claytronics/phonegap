@@ -19,19 +19,40 @@
 
 package com.AppV1;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+
 import org.apache.cordova.*;
+
+import com.AppV1.AppService;
 
 public class AppV1 extends DroidGap
 {
-    @Override
+	@Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         // Set by <content src="index.html" /> in config.xml
         super.setBooleanProperty("keepRunning", true);
+        
+        Intent i=new Intent(this, AppService.class);
+        
+        i.putExtra(AppService.EXTRA_PLAYLIST, "main");
+        i.putExtra(AppService.EXTRA_SHUFFLE, true);
+        
+        startService(i);
+        
         super.loadUrl(Config.getStartUrl());
         //super.loadUrl("file:///android_asset/www/merge.html");
     }
+	
+	@Override
+    public void onDestroy()
+    {        
+        stopService(new Intent(this, AppService.class));
+        super.onDestroy();
+    }
+     
 }
 

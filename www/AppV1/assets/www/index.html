@@ -16,11 +16,14 @@
         <script type="text/javascript" charset="utf-8" src="datePickerPlugin.js"></script>
         <script type="text/javascript" src="dateAndTime.js"></script>
         <script type="text/javascript" src="includes.js"></script>
+		<script type="text/javascript" charset="utf-8" src="powermanagement.js"></script>
         <script type="text/javascript" charset="utf-8">
 
-
+		
+	var startTime;
+	
     document.addEventListener("deviceready", onDeviceReady, false);
-
+	
     function onDeviceReady()
     {
 		// some init code here
@@ -30,13 +33,39 @@
 		// clear old data from local DB
     }
 
+	function lockacquire() {
+			PowerManagement.prototype.acquire(
+					function() { /*alert( 'Lock Acquired' );*/ },
+					function() { /*alert( 'Failed to acquire Lock!!' );*/ }
+					);
+	};
+	
+	function lockrelease() {
+			PowerManagement.prototype.release(
+					function() { /*alert( 'Lock Released' );*/ },
+					function() { /*alert( 'Failed to release Lock!!' );*/ }
+					);
+	}
+	
+	function partiallock() {
+			PowerManagement.prototype.acquire(
+					function() { /*alert( 'Partial Lock Acquired' );*/ },
+					function() { /*alert( 'Failed to acquire Lock!' );*/ }
+					);
+	}
+	
 	function StartTracking()
 	{
 		// start logging the data
 		// set repeat intervals for each of the loggers
+		var d = new Date();
+		startTime = d.getTime();
+		
 		alert('Starting to Track Usage Data');
 		start = 1;
 		CreateTables();
+		
+		//lockacquire();
 		
 		if(userName == null || userName =='')
 		{
@@ -66,7 +95,11 @@
           document.addEventListener("pause", onPause, false);
 		  readyCheckID = setInterval(function(){checkData(frequency)}, frequency);
 		 
-		  DBpushID = setInterval(function(){dataPush2ServerDB()}, frequency*10);	
+		  DBpushID = setInterval(function(){dataPush2ServerDB()}, frequency*10);
+		  
+		  setInterval(function(){ var x=document.getElementById("mytime");
+									var d = new Date();
+									x.innerHTML = d.getTime() - startTime;}, 2000);
 	}
 
     function StopTracking()
@@ -99,6 +132,7 @@
 
 		/*if(DBpushID != null)
 			clearInterval(DBpushID);*/ // for now pushing every log to remote server's DB
+		//lockrelease();	
 	}
 
 	function dataPush2ServerDB()
@@ -317,5 +351,6 @@
 			</tr>
 
 		 </table>
+		 <div id="mytime"> Elapsed Time </div>
 	</body>
 </html>

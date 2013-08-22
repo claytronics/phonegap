@@ -60,6 +60,7 @@
     <plugin name="ringStateListener" value="org.apache.cordova.plugin.ringStateListener"/>
     <plugin name="phoneStateBroadCastReceiver" value="org.apache.cordova.plugin.phoneStateBroadCastReceiver"/>
     <plugin name="DatePickerPlugin" value="org.apache.cordova.plugin.DatePickerPlugin"/>
+    <plugin name="PowerManagement" value="org.apache.cordova.plugin.PowerManagement"/>
 </plugins>
 </cordova>
 
