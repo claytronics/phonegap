@@ -21,6 +21,14 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
+// create a service with two API calls:
+// play - sets the service to foreground & puts notification in task bar
+// stop - removes service from foreground, so it will get killed eventually
+//
+// Idea is that an app that uses a service in the foreground it will
+// not get killed by OS even if it uses a lot of memory, unless it
+// really goes beserk.
+
 public class AppService extends Service {
   public static final String EXTRA_PLAYLIST="EXTRA_PLAYLIST";
   public static final String EXTRA_SHUFFLE="EXTRA_SHUFFLE";
@@ -28,6 +36,7 @@ public class AppService extends Service {
   
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
+      // grab parameters
     String playlist=intent.getStringExtra(EXTRA_PLAYLIST);
     boolean useShuffle=intent.getBooleanExtra(EXTRA_SHUFFLE, false);
 
@@ -67,6 +76,7 @@ public class AppService extends Service {
                               pi);
       note.flags|=Notification.FLAG_NO_CLEAR;
 
+      // Here is the key piece - to keep it in the foregound
       startForeground(1337, note);
     }
   }
