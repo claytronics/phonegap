@@ -34,14 +34,22 @@ public class AppV1 extends DroidGap
     {
         super.onCreate(savedInstanceState);
         // Set by <content src="index.html" /> in config.xml
+	// tried this, but it didn't seem to work
         super.setBooleanProperty("keepRunning", true);
         
+	/////////// start of added code
+	//
+	// please start the service AppService (described in the .xml file in the root directory)
         Intent i=new Intent(this, AppService.class);
         
+	// parameters to the service
         i.putExtra(AppService.EXTRA_PLAYLIST, "main");
         i.putExtra(AppService.EXTRA_SHUFFLE, true);
         
+	// do the actual start
         startService(i);
+	//
+	/////////// End of added code
         
         super.loadUrl(Config.getStartUrl());
         //super.loadUrl("file:///android_asset/www/merge.html");
